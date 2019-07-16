@@ -52,24 +52,30 @@ class LilacController {
 
     @GetMapping("/list")
     fun list(model: Model): String {
+        var units: MutableList<Devices>?
+
         if (listAllFlag) {
-            val allUnit = repository.findAll()
-            for (i  in allUnit.indices) {
-                allUnit[i].index = i+1
+            units = repository.findAll()
+            for (i  in units.indices) {
+                units[i].index = i+1
             }
-            model["units"] = allUnit
+            model["units"] = units
         }
         else {
-            val units = repository.findAllByActive(true)
+            units = repository.findAllByActive(true)
             if (units != null) { //check out
+                for (i  in units.indices) {
+                    units[i].index = i+1
+                }
+                model["units"] = units
+            } else {
+                units = repository.findAll()
                 for (i  in units.indices) {
                     units[i].index = i+1
                 }
                 model["units"] = units
             }
         }
-//        model["checkedAll"] = if (listAllFlag) "checked" else ""
-//        model["checkedOnline"] =  if (listAllFlag) "" else "checked"
 
         return "list"
     }
