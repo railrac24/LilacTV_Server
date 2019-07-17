@@ -50,33 +50,27 @@ class LilacController {
 //        return pageTag
 //    }
 
+    fun setIndex(units: MutableList<Devices>): MutableList<Devices> {
+        for (i  in units.indices) {
+            units[i].index = i+1
+        }
+        return units
+    }
+
     @GetMapping("/list")
     fun list(model: Model): String {
         var units: MutableList<Devices>?
 
         if (listAllFlag) {
             units = repository.findAll()
-            for (i  in units.indices) {
-                units[i].index = i+1
-            }
-            model["units"] = units
         }
         else {
             units = repository.findAllByActive(true)
-            if (units != null) { //check out
-                for (i  in units.indices) {
-                    units[i].index = i+1
-                }
-                model["units"] = units
-            } else {
+            if (units == null) {
                 units = repository.findAll()
-                for (i  in units.indices) {
-                    units[i].index = i+1
-                }
-                model["units"] = units
             }
         }
-
+        model["units"] = setIndex(units)
         return "list"
     }
 
