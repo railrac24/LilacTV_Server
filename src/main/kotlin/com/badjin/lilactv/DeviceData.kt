@@ -12,5 +12,6 @@ data class Devices (
         var registered: String,
         var active: Boolean,
         var index: Int?,
+        var enable: Boolean,
         @Id @GeneratedValue var id : Long? = null
 )
