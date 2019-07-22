@@ -9,7 +9,6 @@ import java.security.MessageDigest
 import javax.servlet.http.HttpSession
 
 @Controller
-//@RequestMapping("device")
 class LilacTVController {
 
     private var listAllFlag: Boolean = false
@@ -43,11 +42,10 @@ class LilacTVController {
     fun crypto(ss: String): String {
         val sha = MessageDigest.getInstance("SHA-256")
         val hexa = sha.digest(ss.toByteArray())
-        val cryptoStr = hexa.fold("", {
+
+        return hexa.fold("", {
             str, it -> str + "%02x".format(it)
         })
-
-        return cryptoStr
     }
 
     fun setIndex(units: MutableList<Devices>): MutableList<Devices> {
@@ -59,14 +57,14 @@ class LilacTVController {
 
     @GetMapping("/{pageTag}")
     fun htmlPage(model: Model, @PathVariable pageTag: String): String {
-        if (pageTag == "list") {
-            return "redirect:/list"
+        if (pageTag == "devicelist") {
+            return "redirect:/devicelist"
         }
         return pageTag
     }
 
-    @GetMapping("/list")
-    fun list(model: Model): String {
+    @GetMapping("/devicelist")
+    fun devicelist(model: Model): String {
         var units: MutableList<Devices>?
 
         if (listAllFlag) {
@@ -79,13 +77,13 @@ class LilacTVController {
             }
         }
         model["units"] = setIndex(units)
-        return "list"
+        return "devicelist"
     }
 
     @PostMapping("/update")
     fun update(model: Model, @RequestParam(name = "ListMode") sortMode: String): String {
         listAllFlag = sortMode == "all"
-        return "redirect:/list"
+        return "redirect:/devicelist"
     }
 
 //    @PostMapping("/create")
@@ -104,14 +102,13 @@ class LilacTVController {
             val dbUser = userrepo.findByEmail(email)
 
             if (dbUser != null) {
-                if (dbUser.password == cryptoPass) {
+                pageName = if (dbUser.password == cryptoPass) {
                     session.setAttribute("email", dbUser.email)
-                    model["firstname"] = dbUser.firstName
-                    model["lastname"] = dbUser.lastName
-                    pageName = "welcome"
-                }
-                else {
-                    pageName = "login"
+                    model["first_name"] = dbUser.first_name
+                    model["last_name"] = dbUser.last_name
+                    "welcome"
+                } else {
+                    "login"
                 }
             }
         } catch (e: Exception) {
@@ -122,20 +119,32 @@ class LilacTVController {
     }
 
     @PostMapping("/register")
-    fun postSign(model: Model,
-                 @RequestParam(value = "fname") firstname: String,
-                 @RequestParam(value = "lname") lastname: String,
+    fun register(model: Model,
+                 @RequestParam(value = "first_name") first_name: String,
+                 @RequestParam(value = "last_name") last_name: String,
                  @RequestParam(value = "email") email: String,
                  @RequestParam(value = "pass") password: String,
                  @RequestParam(value = "cpass") cpassword: String): String {
         try {
             val cryptoPass = crypto(password)
-            userrepo.save(Users(firstname, lastname, email, cryptoPass))
+            userrepo.save(Users(first_name, last_name, email, cryptoPass))
         } catch (e: Exception){
             e.printStackTrace()
         }
 
         return "login"
+    }
+
+    @GetMapping("users")
+    fun users(model: Model): String {
+        val owner: MutableList<Users>? = userrepo.findAll()
+        val names: MutableList<String>? = null
+
+        if (owner != null) {
+            for (i  in owner.indices) names?.set(i, owner[i].first_name+" "+owner[i].last_name)
+        }
+
+        return "users"
     }
 
 }

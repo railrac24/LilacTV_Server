@@ -9,10 +9,10 @@
 USE LilacTVDB;
 
 CREATE TABLE IF NOT EXISTS users (
-  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  firstname VARCHAR(30),
-  lastname VARCHAR(30),
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
   email VARCHAR(255),
   password VARCHAR(80),
+  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   INDEX(email)
 ) engine=InnoDB;

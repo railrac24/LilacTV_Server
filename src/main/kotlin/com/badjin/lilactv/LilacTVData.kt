@@ -18,8 +18,8 @@ data class Devices (
 
 @Entity
 data class Users (
-        var firstName: String,
-        var lastName: String,
+        var first_name: String,
+        var last_name: String,
         var email: String,
         var password: String,
         @Id @GeneratedValue var id: Long? = null
