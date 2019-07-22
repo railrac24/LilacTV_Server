@@ -15,3 +15,12 @@ data class Devices (
         var enable: Boolean,
         @Id @GeneratedValue var id : Long? = null
 )
+
+@Entity
+data class Users (
+        var firstName: String,
+        var lastName: String,
+        var email: String,
+        var password: String,
+        @Id @GeneratedValue var id: Long? = null
+)
