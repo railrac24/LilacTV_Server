@@ -21,8 +21,14 @@ class Utils {
     }
 
     fun checkLilacTVID(id: String): Pair<String, Long> {
-        val mac = "1234"
-        val unitID: Long = 12
+        var mac: String = ""
+
+        for (i in 0..8 step 2) {
+            mac += id.substring(i,i+2) + ':'
+        }
+        mac += id.substring(10,12)
+        val unitID = id.substring(12,14).toLong(radix = 16)
+
         return Pair(mac, unitID)
     }
 }

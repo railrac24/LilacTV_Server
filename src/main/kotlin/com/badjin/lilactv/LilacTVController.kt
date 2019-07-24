@@ -90,23 +90,23 @@ class LilacTVController {
                  @RequestParam(value = "cpass") cpassword: String): String {
         try {
             val cryptoPass = utils.crypto(password)
-            val unitID: Long? = null
-//            if (lilactvID != null) {
-//                val (mac_add, deviceID) = utils.checkLilacTVID(lilactvID)
-//                val unit: Units? = unitDB.findByMacAddEth0(mac_add)
-//
-//                if (unit != null) {
-//                   if (unit.id == deviceID) {
-//                       unitID = unit.id
-//                   } else {
-////                       model["errorMsg"] = "잘못된 제품ID 입니다."
-//                       return "register"
-//                   }
-//                } else {
-////                    model["errorMsg"] = "잘못된 제품ID 입니다."
-//                    return "register"
-//                }
-//            }
+            var unitID: Long? = null
+            if (lilactvID != null) {
+                val (mac_add, deviceID) = utils.checkLilacTVID(lilactvID)
+                val unit: Items? = itemDB.findByMacaddeth0(mac_add)
+
+                if (unit != null) {
+                   if (unit.id == deviceID) {
+                       unitID = unit.id
+                   } else {
+//                       model["errorMsg"] = "잘못된 제품ID 입니다."
+                       return "register"
+                   }
+                } else {
+//                    model["errorMsg"] = "잘못된 제품ID 입니다."
+                    return "register"
+                }
+            }
             userDB.save(Users(name, email, mobile, unitID, cryptoPass))
         } catch (e: Exception){
             e.printStackTrace()
