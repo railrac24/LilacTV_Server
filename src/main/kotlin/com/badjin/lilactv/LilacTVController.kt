@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession
 @Controller
 class LilacTVController {
 
-    private var listAllFlag: Boolean = true
+    private var listAllFlag: Boolean = false
 
     @Autowired
     lateinit var itemDB: ItemRepo
@@ -90,24 +90,25 @@ class LilacTVController {
                  @RequestParam(value = "cpass") cpassword: String): String {
         try {
             val cryptoPass = utils.crypto(password)
-            var unitID: Long? = null
             if (lilactvID != null) {
                 val (mac_add, deviceID) = utils.checkLilacTVID(lilactvID)
                 val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
                 if (unit != null) {
                    if (unit.id == deviceID) {
-                       unitID = unit.id
+                       unit.owner = Users(name, email, mobile, cryptoPass)
+                       println("mac = $mac_add   deviceID = $deviceID")
+//                       itemDB.save(unit)
                    } else {
 //                       model["errorMsg"] = "잘못된 제품ID 입니다."
                        return "register"
                    }
                 } else {
-//                    model["errorMsg"] = "잘못된 제품ID 입니다."
-                    return "register"
+//                     model["errorMsg"] = "잘못된 제품ID 입니다."
+                      return "register"
                 }
             }
-            userDB.save(Users(name, email, mobile, unitID, cryptoPass))
+            userDB.save(Users(name, email, mobile, cryptoPass))
         } catch (e: Exception){
             e.printStackTrace()
         }

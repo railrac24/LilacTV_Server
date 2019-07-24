@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(80),
     email VARCHAR(80),
     mobile VARCHAR(30),
-    deviceid TINYINT(4),
     password VARCHAR(80),
     id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     INDEX(email)
@@ -26,6 +25,8 @@ CREATE TABLE IF NOT EXISTS items (
     tvheadend BOOLEAN NOT NULL DEFAULT FALSE,
     seqindex TINYINT(4),
     id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    INDEX (macaddeth0)
+    INDEX (macaddeth0),
+    owner_id TINYINT(4) UNSIGNED NOT NULL DEFAULT 1,
+    FOREIGN KEY (owner_id) REFERENCES users(id)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 

@@ -25,20 +25,20 @@
         <thead>
             <tr>
                 <th scope="col">Index</th>
+                <th scope="col">Owner</th>
                 <th scope="col">Mac Address</th>
                 <th scope="col">IP Address</th>
                 <th scope="col">Online</th>
-                <th scope="col">tvHeadend</th>
             </tr>
         </thead>
         <tbody>
             {{#units}}
             <tr>
                 <td>{{seqindex}}</td>
+                <td>{{owner.name}}</td>
                 <td>{{macaddeth0}}</td>
                 <td>{{ipadd}}</td>
                 <td>{{online}}</td>
-                <td>{{tvheadend}}</td>
             </tr>
             {{/units}}
         </tbody>
