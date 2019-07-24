@@ -5,22 +5,23 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 
 @Entity
-data class Devices (
-        var mac_add_eth0: String,
-        var mac_add_wlan: String,
-        var ip_add: String,
-        var registered: String,
-        var active: Boolean,
-        var index: Int?,
-        var enable: Boolean,
+data class Items (
+        var macaddeth0: String,
+        var macaddwlan: String,
+        var ipadd: String,
+        var online: Boolean,
+        var tvheadend: Boolean,
+        var seqindex: Int?,
         @Id @GeneratedValue var id : Long? = null
 )
 
 @Entity
 data class Users (
-        var first_name: String,
-        var last_name: String,
+        var name: String,
         var email: String,
+        var mobile: String,
+        var deviceid: Long? = null,
         var password: String,
         @Id @GeneratedValue var id: Long? = null
 )
+

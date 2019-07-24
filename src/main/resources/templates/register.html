@@ -13,51 +13,107 @@
         }
     }
 </script>
-
 <div class="container">
-    <div class="card card-register mx-auto mt-5">
+    <div class="card card-register mx-auto mt-5" style="width: 40rem;">
         <div class="card-header">Register an Account</div>
         <div class="card-body">
             <form action="/register" method="post">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="namebar" style="width: 72px">Name</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                           name="name" placeholder="이름" required="required" autofocus="autofocus">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="emailbar" style="width: 72px">Email</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                           name="email" placeholder="이메일" required="required">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="phonebar" style="width: 72px">Mobile</span>
+                    </div>
+                    <input type="tel" pattern="[0-9]{4}[0-9]{3}[0-9]{3}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                           name="mobile" placeholder="핸드폰" required="required">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="lilactvbar" style="width: 72px">LilacTV</span>
+                    </div>
+                    <input type="text" pattern="[a-f0-9]{14}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                           name="lilactvID" placeholder="제품ID (LilacTV 설정>서브메뉴>[제품정보]에서 확인가능)">
+                </div>
+<!--                <div class="input-group mb-3">-->
+<!--                    <div class="input-group-prepend">-->
+<!--                        <span class="input-group-text" id="passwordbar">P인assword</span>-->
+<!--                    </div>-->
+<!--                    <input type="password" id="inputPassword" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"-->
+<!--                           name="pass" placeholder="비밀번호" required="required">-->
+<!--                </div>-->
+<!--                <div class="input-group mb-3">-->
+<!--                    <div class="input-group-prepend">-->
+<!--                        <span class="input-group-text" id="cpasswordbar" style="width: 96px">Confirm</span>-->
+<!--                    </div>-->
+<!--                    <input type="password" id="confirmPassword" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"-->
+<!--                           name="cpass" placeholder="비밀번호 확인" required="required">-->
+<!--                            <label for="cpasswordbar">Confirm password</label>-->
+<!--                    <span id='message'></span>-->
+<!--                </div>-->
                 <div class="form-group">
                     <div class="form-row">
                         <div class="col-md-6">
                             <div class="form-label-group">
-                                <input type="text" id="firstName" name="first_name" class="form-control" placeholder="First name" required="required" autofocus="autofocus">
-                                <label for="firstName">First name</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-label-group">
-                                <input type="text" id="lastName" name="last_name" class="form-control" placeholder="Last name" required="required">
-                                <label for="lastName">Last name</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-label-group">
-                        <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email address" required="required">
-                        <label for="inputEmail">Email address</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <div class="form-label-group">
-                                <input type="password" id="inputPassword" name="pass" class="form-control" placeholder="Password" required="required" onchange='check_pass()'>
+                                <input type="password" id="inputPassword" name="pass" class="form-control" placeholder="비밀번호" required="required" onchange='check_pass()'>
                                 <label for="inputPassword">Password</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-label-group">
-                                <input type="password" id="confirmPassword" name="cpass" class="form-control" placeholder="Confirm password" required="required" onchange='check_pass()'>
+                                <input type="password" id="confirmPassword" name="cpass" class="form-control" placeholder="비밀번호 확인" required="required" onchange='check_pass()'>
                                 <label for="confirmPassword">Confirm password</label>
                                 <span id='message'></span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+<!--                <div class="form-group">-->
+<!--                    <div class="form-row">-->
+<!--                        <div class="col-md-6">-->
+<!--                            <div class="form-label-group">-->
+<!--                                <input type="text" id="Name" name="name" class="form-control" placeholder="이름" required="required" autofocus="autofocus">-->
+<!--                                <label for="Name">Name</label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-6">-->
+<!--                            <div class="form-label-group">-->
+<!--                                <input type="email" id="inputEmail" name="email" class="form-control" placeholder="이메일 주소" required="required">-->
+<!--                                <label for="inputEmail">Email address</label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <div class="form-row">-->
+<!--                        <div class="col-md-6">-->
+<!--                            <div class="form-label-group">-->
+<!--                                <input type="password" id="inputPassword" name="pass" class="form-control" placeholder="비밀번호" required="required" onchange='check_pass()'>-->
+<!--                                <label for="inputPassword">Password</label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-6">-->
+<!--                            <div class="form-label-group">-->
+<!--                                <input type="password" id="confirmPassword" name="cpass" class="form-control" placeholder="비밀번호 확인" required="required" onchange='check_pass()'>-->
+<!--                                <label for="confirmPassword">Confirm password</label>-->
+<!--                                <span id='message'></span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
                 <button type="submit" class="btn btn-primary btn-block" id="submit" disabled>Register</button>
             </form>
             <div class="text-center">

@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class LilactvApplication
+class LilacTVApplication
 
 fun main(args: Array<String>) {
-    runApplication<LilactvApplication>(*args)
+    runApplication<LilacTVApplication>(*args)
 }

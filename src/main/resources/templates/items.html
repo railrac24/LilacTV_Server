@@ -3,15 +3,14 @@
 <script>
 
     function submitForm() {
-        document.getElementById("updtateList").submit();
+        document.getElementById("updatelist").submit();
     }
 
 </script>
 
 <div class="container" style="margin-top: 20px">
-<!--    <div style="float:left"><h2>Device List</h2></div>-->
     <div align="right">
-        <form id="updtateList" action="/update" method="post">
+        <form id="updatelist" action="/update" method="post">
             <div class="btn-group btn-group-toggle" data-toggle="buttons" style="margin-bottom: 20px">
                 <label class="btn btn-secondary">
                     <input type="radio" name="ListMode" id="option1" autocomplete="off" value="all" onclick="submitForm()" > All List
@@ -20,18 +19,6 @@
                     <input type="radio" name="ListMode" id="option2" autocomplete="off" value="online" onclick="submitForm()" > Online
                 </label>
             </div>
-<!--            <div class="form-check form-check-inline">-->
-<!--                <input class="form-check-input" type="radio" name="ListMode" id="exampleRadios1" value="all" onclick="submitForm()" checked="checked">-->
-<!--                <label class="form-check-label" for="exampleRadios1">-->
-<!--                    All list-->
-<!--                </label>-->
-<!--            </div>-->
-<!--            <div class="form-check form-check-inline">-->
-<!--                <input class="form-check-input" type="radio" name="ListMode" id="exampleRadios2" value="online" onclick="submitForm()"checked="">-->
-<!--                <label class="form-check-label" for="exampleRadios2">-->
-<!--                    Online List-->
-<!--                </label>-->
-<!--            </div>-->
         </form>
     </div>
     <table class="table table-hover">
@@ -47,11 +34,11 @@
         <tbody>
             {{#units}}
             <tr>
-                <td>{{index}}</td>
-                <td>{{mac_add_eth0}}</td>
-                <td>{{ip_add}}</td>
-                <td>{{active}}</td>
-                <td>{{enable}}</td>
+                <td>{{seqindex}}</td>
+                <td>{{macaddeth0}}</td>
+                <td>{{ipadd}}</td>
+                <td>{{online}}</td>
+                <td>{{tvheadend}}</td>
             </tr>
             {{/units}}
         </tbody>

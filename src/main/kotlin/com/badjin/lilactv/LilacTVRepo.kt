@@ -2,10 +2,11 @@ package com.badjin.lilactv
 
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface deviceRepo: JpaRepository<Devices, Long> {
-    fun findAllByActive(active: Boolean): MutableList<Devices>?
+interface ItemRepo: JpaRepository<Items, Long> {
+    fun findAllByOnline(online: Boolean): MutableList<Items>?
+    fun findByMacaddeth0(macaddeth0: String): Items?
 }
 
-interface userRepo: JpaRepository<Users, Long> {
+interface UserRepo: JpaRepository<Users, Long> {
     fun findByEmail(email: String): Users?
 }

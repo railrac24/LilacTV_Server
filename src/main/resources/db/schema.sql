@@ -9,10 +9,23 @@
 USE LilacTVDB;
 
 CREATE TABLE IF NOT EXISTS users (
-  first_name VARCHAR(30),
-  last_name VARCHAR(30),
-  email VARCHAR(255),
-  password VARCHAR(80),
-  id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  INDEX(email)
-) engine=InnoDB;
+    name VARCHAR(80),
+    email VARCHAR(80),
+    mobile VARCHAR(30),
+    deviceid TINYINT(4),
+    password VARCHAR(80),
+    id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    INDEX(email)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS items (
+    macaddeth0 VARCHAR(30),
+    macaddwlan VARCHAR(30),
+    ipadd VARCHAR(30),
+    online BOOLEAN NOT NULL DEFAULT FALSE,
+    tvheadend BOOLEAN NOT NULL DEFAULT FALSE,
+    seqindex TINYINT(4),
+    id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    INDEX (macaddeth0)
+) engine=InnoDB DEFAULT CHARSET=utf8;
+

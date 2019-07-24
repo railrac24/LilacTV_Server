@@ -5,91 +5,54 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
-import java.security.MessageDigest
 import javax.servlet.http.HttpSession
 
 @Controller
 class LilacTVController {
 
-    private var listAllFlag: Boolean = false
+    private var listAllFlag: Boolean = true
 
     @Autowired
-    lateinit var unitrepo: deviceRepo
+    lateinit var itemDB: ItemRepo
 
     @Autowired
-    lateinit var userrepo: userRepo
+    lateinit var userDB: UserRepo
 
-//    @GetMapping("/index")
-//    fun index(): String {
-//        return "index"
-//    }
-//
-//    @GetMapping("/welcome")
-//    fun welcome(): String {
-//        return "welcome"
-//    }
-//
-//    @GetMapping("/login")
-//    fun login(): String {
-//        return "login"
-//    }
-//
-//    @GetMapping("/register")
-//    fun register(): String {
-//        return "register"
-//    }
-
-    fun crypto(ss: String): String {
-        val sha = MessageDigest.getInstance("SHA-256")
-        val hexa = sha.digest(ss.toByteArray())
-
-        return hexa.fold("", {
-            str, it -> str + "%02x".format(it)
-        })
-    }
-
-    fun setIndex(units: MutableList<Devices>): MutableList<Devices> {
-        for (i  in units.indices) {
-            units[i].index = i+1
-        }
-        return units
-    }
+    val utils = Utils()
 
     @GetMapping("/{pageTag}")
     fun htmlPage(model: Model, @PathVariable pageTag: String): String {
-        if (pageTag == "devicelist") {
-            return "redirect:/devicelist"
+        if (pageTag == "items") {
+            return "redirect:/items"
+        } else if (pageTag == "users") {
+            return "redirect:/users"
         }
         return pageTag
     }
 
-    @GetMapping("/devicelist")
-    fun devicelist(model: Model): String {
-        var units: MutableList<Devices>?
+    @GetMapping("/items")
+    fun items(model: Model): String {
+        var units: MutableList<Items>?
 
         if (listAllFlag) {
-            units = unitrepo.findAll()
+            units = itemDB.findAll()
         }
         else {
-            units = unitrepo.findAllByActive(true)
+            units = itemDB.findAllByOnline(true)
             if (units == null) {
-                units = unitrepo.findAll()
+                units = itemDB.findAll()
             }
         }
-        model["units"] = setIndex(units)
-        return "devicelist"
+
+        model["units"] = utils.setIndex(units)
+        return "items"
     }
 
     @PostMapping("/update")
     fun update(model: Model, @RequestParam(name = "ListMode") sortMode: String): String {
         listAllFlag = sortMode == "all"
-        return "redirect:/devicelist"
+        return "redirect:/items"
     }
-
-//    @PostMapping("/create")
-//    fun create(): String {
-//        return "redirect:/list"
-//    }
 
     @PostMapping("/login")
     fun postLogin(model: Model,
@@ -98,14 +61,13 @@ class LilacTVController {
                   @RequestParam(value = "pass") password: String): String {
         var pageName = ""
         try {
-            val cryptoPass = crypto(password)
-            val dbUser = userrepo.findByEmail(email)
+            val cryptoPass = utils.crypto(password)
+            val dbUser = userDB.findByEmail(email)
 
             if (dbUser != null) {
                 pageName = if (dbUser.password == cryptoPass) {
                     session.setAttribute("email", dbUser.email)
-                    model["first_name"] = dbUser.first_name
-                    model["last_name"] = dbUser.last_name
+                    model["name"] = dbUser.name
                     "welcome"
                 } else {
                     "login"
@@ -120,14 +82,32 @@ class LilacTVController {
 
     @PostMapping("/register")
     fun register(model: Model,
-                 @RequestParam(value = "first_name") first_name: String,
-                 @RequestParam(value = "last_name") last_name: String,
+                 @RequestParam(value = "name") name: String,
                  @RequestParam(value = "email") email: String,
+                 @RequestParam(value = "mobile") mobile: String,
+                 @RequestParam(value = "lilactvID") lilactvID: String,
                  @RequestParam(value = "pass") password: String,
                  @RequestParam(value = "cpass") cpassword: String): String {
         try {
-            val cryptoPass = crypto(password)
-            userrepo.save(Users(first_name, last_name, email, cryptoPass))
+            val cryptoPass = utils.crypto(password)
+            val unitID: Long? = null
+//            if (lilactvID != null) {
+//                val (mac_add, deviceID) = utils.checkLilacTVID(lilactvID)
+//                val unit: Units? = unitDB.findByMacAddEth0(mac_add)
+//
+//                if (unit != null) {
+//                   if (unit.id == deviceID) {
+//                       unitID = unit.id
+//                   } else {
+////                       model["errorMsg"] = "잘못된 제품ID 입니다."
+//                       return "register"
+//                   }
+//                } else {
+////                    model["errorMsg"] = "잘못된 제품ID 입니다."
+//                    return "register"
+//                }
+//            }
+            userDB.save(Users(name, email, mobile, unitID, cryptoPass))
         } catch (e: Exception){
             e.printStackTrace()
         }
@@ -135,15 +115,12 @@ class LilacTVController {
         return "login"
     }
 
-    @GetMapping("users")
+    @GetMapping("/users")
     fun users(model: Model): String {
-        val owner: MutableList<Users>? = userrepo.findAll()
-        val names: MutableList<String>? = null
-
+        val owner: MutableList<Users>? = userDB.findAll()
         if (owner != null) {
-            for (i  in owner.indices) names?.set(i, owner[i].first_name+" "+owner[i].last_name)
+            model["owner"] = owner
         }
-
         return "users"
     }
 
