@@ -13,9 +13,11 @@ class Utils {
         })
     }
 
-    fun setIndex(units: MutableList<Items>): MutableList<Items> {
-        for (i  in units.indices) {
-            units[i].seqindex = i+1
+    fun setIndex(units: MutableList<Items>?): MutableList<Items>? {
+        if (units != null) {
+            for (i  in units.indices) {
+                units[i].seqindex = i+1
+            }
         }
         return units
     }

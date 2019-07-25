@@ -1,9 +1,6 @@
 package com.badjin.lilactv
 
 import javax.persistence.*
-import javax.persistence.FetchType
-
-
 
 @Entity
 data class Users (
@@ -11,6 +8,8 @@ data class Users (
     var email: String,
     var mobile: String,
     var password: String,
+    @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
+    var lilactv: MutableList<Items>?,
     @Id @GeneratedValue var id: Long? = null
 )
 
@@ -23,7 +22,7 @@ data class Items (
     var tvheadend: Boolean,
     var seqindex: Int?,
     @Id @GeneratedValue var id : Long? = null,
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "owner_id")
     var owner: Users?
 )
