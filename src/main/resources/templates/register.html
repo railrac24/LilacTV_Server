@@ -13,17 +13,26 @@
         }
     }
 
-    function setNotmatch() {
-        document.getElementById('message').style.color = 'red';
-        document.getElementById('message').innerHTML = 'not matching';
-        document.getElementById('submit').disabled = true;
+    function getLilacTVChecked() {
+        var checkBox = document.getElementById("isLilacTVChecked");
+        if (checkBox.checked == true) {
+            productID.style.display = "block";
+            document.getElementById('whereID').style.color = 'darkgray';
+            document.getElementById('whereID').innerHTML = '라일락TV의 [설정]메뉴 > 서브메뉴(왼쪽메뉴) > [제품정보]에서 확인가능';
+            whereID.style.display = "block";
+        }
+        else {
+            productID.style.display = "none";
+            whereID.style.display = "none";
+        }
     }
+
 </script>
 
 <style>
     #bj {
         padding-top: 100px;
-        padding-bottom: 229px;
+        /*padding-bottom: 229px;*/
     }
 </style>
 
@@ -37,7 +46,7 @@
                         <span class="input-group-text" id="namebar" style="width: 80px">Name</span>
                     </div>
                     <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="name" placeholder="이름" required="required" autofocus="autofocus" onfocus="setNotmatch()">
+                           name="name" placeholder="이름" required="required" autofocus="autofocus">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -53,24 +62,26 @@
                     <input type="tel" pattern="[0-9]{4}[0-9]{3}[0-9]{3}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
                            name="mobile" placeholder="핸드폰" required="required">
                 </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isLilacTVChecked" onclick="getLilacTVChecked()">
+                    <label class="form-check-label" for="isLilacTVChecked">라일락TV를 사용중 입니다.</label>
+                </div>
+                <span id='whereID' style="font-size: 12px; display:none"></span>
                 <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="lilactvbar" style="width: 80px">LilacTV</span>
-                    </div>
-                    <input type="text" pattern="[a-f0-9]{14}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="lilactvID" placeholder="제품ID  (LilacTV 설정 > 서브메뉴 > [제품정보]에서 확인가능)">
+                    <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                           name="lilactvID" placeholder="제품ID" style="display:none">
                 </div>
                 <div class="form-group">
                     <div class="form-row">
                         <div class="col-md-6">
                             <div class="form-label-group">
-                                <input type="password" id="inputPassword" name="pass" class="form-control" required="required" onchange='check_pass()'>
+                                <input type="password" id="inputPassword" name="pass" class="form-control" required="required">
                                 <label for="inputPassword">Password</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-label-group">
-                                <input type="password" id="confirmPassword" name="cpass" class="form-control" required="required" onchange='check_pass()'>
+                                <input type="password" id="confirmPassword" name="cpass" class="form-control" required="required" onfocusout='check_pass()'>
                                 <label for="confirmPassword">Confirm password</label>
                                 <span id='message'></span>
                             </div>
@@ -80,10 +91,6 @@
 
                 <button type="submit" class="btn btn-primary btn-block" id="submit" disabled>Register</button>
             </form>
-            <div class="text-center">
-                <a class="d-block small mt-3" href="login">Login Page</a>
-                <a class="d-block small" href="forgot-password">Forgot Password?</a>
-            </div>
         </div>
     </div>
 </div>
