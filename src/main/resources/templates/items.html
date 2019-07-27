@@ -4,7 +4,7 @@
 <script>
 
     function submitForm() {
-        document.getElementById("updatelist").submit();
+        document.getElementById("updateList").submit();
     }
 
 </script>
@@ -12,13 +12,13 @@
 <div class="container-fluid">
     <div class="container">
         <div align="right">
-            <form id="updatelist" action="/update" method="post">
+            <form id="updateList" action="/update" method="post">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons" style="margin-bottom: 14px">
                     <label class="btn btn-secondary">
-                        <input type="radio" name="ListMode" id="option1" autocomplete="off" value="all" onclick="submitForm()" > All List
+                        <input type="radio" name="ListMode" id="option1" value="all" onchange="submitForm()"> All List
                     </label>
                     <label class="btn btn-secondary">
-                        <input type="radio" name="ListMode" id="option2" autocomplete="off" value="online" onclick="submitForm()" > Online
+                        <input type="radio" name="ListMode" id="option2" value="online" onchange="submitForm()" > Online
                     </label>
                 </div>
             </form>

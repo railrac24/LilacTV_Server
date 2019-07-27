@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession
 @Controller
 class LilacTVController {
 
-    private var listAllFlag: Boolean = false
+    private var listAllFlag: Boolean = true
 
     @Autowired
     lateinit var itemDB: ItemRepo
