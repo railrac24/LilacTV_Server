@@ -1,4 +1,4 @@
-{{ > header3 }}
+{{ > /include/header2 }}
 
 <script>
 
@@ -16,6 +16,37 @@
         }
     }
 
+    function getPasswordChecked() {
+        var checkBox = document.getElementById("isPasswordChecked");
+        if (checkBox.checked == true) {
+            inputPassword.style.display = "block";
+            labelPassword.style.display = "block";
+            confirmPassword.style.display = "block";
+            labelConfirmPassword.style.display = "block";
+            document.getElementById('submit').disabled = true;
+        }
+        else {
+            inputPassword.style.display = "none";
+            labelPassword.style.display = "none";
+            confirmPassword.style.display = "none";
+            labelConfirmPassword.style.display = "none";
+            message.style.display = "none";
+            document.getElementById('submit').disabled = false;
+        }
+    }
+
+    function check_pass() {
+        if (document.getElementById('inputPassword').value == document.getElementById('confirmPassword').value) {
+            document.getElementById('message').style.color = 'green';
+            document.getElementById('message').innerHTML = 'matching';
+            document.getElementById('submit').disabled = false;
+        } else {
+            document.getElementById('message').style.color = 'red';
+            document.getElementById('message').innerHTML = 'not matching';
+            document.getElementById('submit').disabled = true;
+        }
+    }
+
 </script>
 
 <style>
@@ -25,12 +56,15 @@
     }
 </style>
 
+{{> /include/navbar }}
+
 <div id="bj" class="container">
     <div class="card card-register mx-auto mt-5" style="width: 40rem;">
-        <div class="card-header">Update an Account</div>
+        {{#user}}
+        <div class="card-header">계정 관리</div>
         <div class="card-body">
             <form action="/updateUser" method="post">
-                {{#user}}
+                <input type="hidden" name="_method" value="put"/>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="namebar" style="width: 80px">Name</span>
@@ -38,12 +72,13 @@
                     <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
                            name="name" placeholder="이름" required="required" autofocus="autofocus" value="{{name}}" onfocus="getLilacTVChecked()">
                 </div>
+                <input type="hidden" name="email" value="{{email}}">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="emailbar" style="width: 80px">Email</span>
                     </div>
                     <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="email" placeholder="이메일" required="required" value="{{email}}">
+                           name="email" placeholder="이메일" required="required" value="{{email}}" disabled>
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -62,29 +97,43 @@
                     <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
                            name="lilactvID" placeholder="제품ID" style="display:none" value="{{lilactvID}}">
                 </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isPasswordChecked" onclick="getPasswordChecked()">
+                    <label class="form-check-label" for="isPasswordChecked">비밀번호를 변경합니다.</label>
+                </div>
                 {{#user}}
                 <div class="form-group">
                     <div class="form-row">
                         <div class="col-md-6">
                             <div class="form-label-group">
-                                <input type="password" id="inputPassword" name="pass" class="form-control" required="required" value="{{password}}" style="display: none">
-<!--                                <label for="inputPassword">Password</label>-->
+                                <input type="password" id="inputPassword" name="pass" class="form-control" style="display: none">
+                                <label id="labelPassword" for="inputPassword" style="display: none">Password</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-label-group">
-                                <input type="password" id="confirmPassword" name="cpass" class="form-control" required="required" value="{{password}}" style="display: none">
-<!--                                <label for="confirmPassword">Confirm password</label>-->
+                                <input type="password" id="confirmPassword" name="cpass" class="form-control" style="display: none" onfocusout='check_pass()'>
+                                <label id="labelConfirmPassword" for="confirmPassword" style="display: none" >Confirm password</label>
                                 <span id='message'></span>
                             </div>
                         </div>
                     </div>
                 </div>
                 {{/user}}
-                <button type="submit" class="btn btn-primary btn-block" id="submit" disabled>Update</button>
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary btn-block" id="submit" >Update</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-danger btn-block" id="delete" >Delete</button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 </div>
 
-{{ > footer3 }}
+{{> /include/stickyFooter1}}
+{{ > /include/footer2 }}

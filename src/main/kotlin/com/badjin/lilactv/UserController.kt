@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import java.io.PrintWriter
 import java.security.MessageDigest
 import javax.servlet.http.HttpServletResponse
@@ -31,7 +28,7 @@ class UserController {
         })
     }
 
-    fun checkLilacTVID(id: String): Pair<String, Long> {
+    fun getMacAndID(id: String): Pair<String, Long> {
         var mac: String = ""
 
         for (i in 0..8 step 2) {
@@ -44,7 +41,7 @@ class UserController {
     }
 
     fun getLilacTVID(mac: String, index: Long?): String {
-        var macID: String = mac.replace(":","")
+        val macID: String = mac.replace(":","")
         var unitID = ""
 
         if (index != null) {
@@ -53,17 +50,14 @@ class UserController {
         return macID+unitID
     }
 
-    fun CheckingLilacTV(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
-        val (mac_add, deviceID) = checkLilacTVID(lilactvID)
+    fun checkingLilacTV(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
+        val (mac_add, deviceID) = getMacAndID(lilactvID)
         val unit: Items? = itemDB.findByMacaddeth0(mac_add)
-        val customer = user
         val out: PrintWriter
 
         if (unit != null) {
             if (unit.id == deviceID) {
                 if (unit.owner?.id == 1L ) {
-                    customer.lilactv?.add(unit)
-                    user.lilactv = customer.lilactv
                     unit.owner = user
                     itemDB.save(unit)
                 } else {
@@ -90,25 +84,26 @@ class UserController {
 
     @GetMapping("/users")
     fun users(model: Model): String {
-        val owner: MutableIterable<Users> = userDB.findAll()
+        val owner: MutableList<Users> = userDB.findAll()
         model["owner"] = owner
         return "users"
     }
 
-    @GetMapping("/{email}/form")
-    fun updateUserData(model: Model, @PathVariable email: String): String {
-        val user = userDB.findByEmail(email)
-        if (user != null) {
-            var checked = ""
-            var macID = ""
-            if (user.lilactv?.isNotEmpty()!!) {
+    @GetMapping("/{id}/form")
+    fun updateUserData(model: Model, @PathVariable id: Long): String {
+        val user = userDB.getOne(id)
+        var checked = ""
+        var macID = ""
+        val unit = itemDB.findByOwner(user)
+        if (unit != null) {
+            if (unit.owner?.id!! > 1L) {
                 checked = "checked"
-                macID = getLilacTVID(user.lilactv!!.first().macaddeth0, user.lilactv!!.first().id)
+                macID = getLilacTVID(unit.macaddeth0, unit.id)
             }
-            model["lilactv"] = checked
-            model["lilactvID"] = macID
-            model["user"] = user
         }
+        model["lilactv"] = checked
+        model["lilactvID"] = macID
+        model["user"] = user
         return "updateUser"
     }
 
@@ -151,11 +146,11 @@ class UserController {
             val cryptoPass = crypto(password)
 
             if (lilactvID != "") {
-                if (! CheckingLilacTV(Users(name, email, mobile, cryptoPass, null), lilactvID, response)) {
+                if (! checkingLilacTV(Users(name, email, mobile, cryptoPass), lilactvID, response)) {
                     return "register"
                 }
             } else
-                userDB.save(Users(name, email, mobile, cryptoPass, null))
+                userDB.save(Users(name, email, mobile, cryptoPass))
 
         } catch (e: Exception){
             e.printStackTrace()
@@ -168,32 +163,60 @@ class UserController {
         return "login"
     }
 
-    @PostMapping("/updateUser")
-    fun update(model: Model,
-                 @RequestParam(value = "name") name: String,
+    @PutMapping("/updateUser")
+    fun update(  @RequestParam(value = "name") name: String,
                  @RequestParam(value = "email") email: String,
                  @RequestParam(value = "mobile") mobile: String,
                  @RequestParam(value = "lilactvID") lilactvID: String,
                  @RequestParam(value = "pass") password: String,
                  @RequestParam(value = "cpass") cpassword: String,
                  response: HttpServletResponse): String {
-        try {
 
-            if (lilactvID != "") {
-                if (! CheckingLilacTV(Users(name, email, mobile, password, null), lilactvID, response)) {
-                    return "updateUser"
-                }
-            } else
-                userDB.save(Users(name, email, mobile, password, null))
+        val cryptoPass = if (cpassword.isNotBlank()) crypto(password) else userDB.findByEmail(email)?.password
+        if (cryptoPass != null) {
+            try {
+                val modUser = Users(name, email, mobile, cryptoPass)
+                val out: PrintWriter
+                modUser.id = userDB.findByEmail(email)?.id
 
-        } catch (e: Exception){
-            e.printStackTrace()
-            val out: PrintWriter = response.writer
-            out.println("<script>alert('이미 등록된 이메일 주소 입니다.'); history.go(-1);</script>")
-            out.flush()
-            return "updateUser"
+                if (lilactvID.isNotBlank()) {
+                    val (mac_add, deviceID) = getMacAndID(lilactvID)
+                    val unit: Items? = itemDB.findByMacaddeth0(mac_add)
+
+                    if (unit != null) {
+                        if (unit.id == deviceID) {
+                            when {
+                                unit.owner?.id == 1L -> {
+                                    unit.owner = modUser
+                                    itemDB.save(unit)
+                                }
+                                unit.owner?.id == modUser.id -> userDB.save(modUser)
+                                else -> {
+                                    out = response.writer
+                                    out.println("<script>alert('This ID is already registered.'); history.go(-1);</script>")
+                                    out.flush()
+                                }
+                            }
+                        } else {
+                            out = response.writer
+                            out.println("<script>alert('Incorrect product ID.'); history.go(-1);</script>")
+                            out.flush()
+                        }
+                    } else {
+                        out = response.writer
+                        out.println("<script>alert('Incorrect product ID.'); history.go(-1);</script>")
+                        out.flush()
+                    }
+                } else userDB.save(modUser)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val out: PrintWriter = response.writer
+                out.println("<script>alert('This email is already registered.'); history.go(-1);</script>")
+                out.flush()
+                return "updateUser"
+            }
         }
-
-        return "users"
+        return "redirect:/users"
     }
 }

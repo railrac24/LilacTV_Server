@@ -1,4 +1,4 @@
-{{> header }}
+{{> /include/header }}
 
 <script>
     function check_pass() {
@@ -35,6 +35,8 @@
         /*padding-bottom: 229px;*/
     }
 </style>
+
+{{> /include/navbar }}
 
 <div id="bj" class="container">
     <div class="card card-register mx-auto mt-5" style="width: 40rem;">
@@ -95,4 +97,5 @@
     </div>
 </div>
 
-{{ > footer }}
+{{> /include/stickyFooter1}}
+{{ > /include/footer }}

@@ -1,5 +1,4 @@
-{{> header }}
-{{> header2 }}
+{{> /include/header }}
 
 <script>
 
@@ -9,8 +8,10 @@
 
 </script>
 
+{{> /include/navbar }}
+
 <div class="container-fluid">
-    <div class="container">
+    <div class="container" style="margin-top: 65px">
         <div align="right">
             <form id="updateList" action="/update" method="post">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons" style="margin-bottom: 14px">
@@ -48,5 +49,5 @@
     </div>
 </div>
 
-
-{{> footer2}}
+{{> /include/stickyFooter1}}
+{{> /include/footer}}
