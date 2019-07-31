@@ -1,101 +1,110 @@
-{{> header }}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
 
-<script>
-    function check_pass() {
-        if (document.getElementById('inputPassword').value == document.getElementById('confirmPassword').value) {
-            document.getElementById('message').style.color = 'green';
-            document.getElementById('message').innerHTML = 'matching';
-            document.getElementById('submit').disabled = false;
-        } else {
-            document.getElementById('message').style.color = 'red';
-            document.getElementById('message').innerHTML = 'not matching';
-            document.getElementById('submit').disabled = true;
-        }
-    }
+        {{> header }}
 
-    function getLilacTVChecked() {
-        var checkBox = document.getElementById("isLilacTVChecked");
-        if (checkBox.checked == true) {
-            productID.style.display = "block";
-            document.getElementById('whereID').style.color = 'darkgray';
-            document.getElementById('whereID').innerHTML = '라일락TV의 [설정]메뉴 > 서브메뉴(왼쪽메뉴) > [제품정보]에서 확인가능';
-            whereID.style.display = "block";
-        }
-        else {
-            productID.style.display = "none";
-            whereID.style.display = "none";
-        }
-    }
+        <script>
+            function check_pass() {
+                if (document.getElementById('inputPassword').value == document.getElementById('confirmPassword').value) {
+                    document.getElementById('message').style.color = 'green';
+                    document.getElementById('message').innerHTML = 'matching';
+                    document.getElementById('submit').disabled = false;
+                } else {
+                    document.getElementById('message').style.color = 'red';
+                    document.getElementById('message').innerHTML = 'not matching';
+                    document.getElementById('submit').disabled = true;
+                }
+            }
 
-</script>
+            function getLilacTVChecked() {
+                var checkBox = document.getElementById("isLilacTVChecked");
+                if (checkBox.checked == true) {
+                    productID.style.display = "block";
+                    document.getElementById('whereID').style.color = 'darkgray';
+                    document.getElementById('whereID').innerHTML = '라일락TV의 [설정]메뉴 > 서브메뉴(왼쪽메뉴) > [제품정보]에서 확인가능';
+                    whereID.style.display = "block";
+                }
+                else {
+                    productID.style.display = "none";
+                    whereID.style.display = "none";
+                }
+            }
 
-<style>
-    #bj {
-        padding-top: 100px;
-        /*padding-bottom: 229px;*/
-    }
-</style>
+        </script>
 
-{{> navbar }}
+        <style>
+            #bj {
+                padding-top: 100px;
+            }
+        </style>
 
-<div id="bj" class="container">
-    <div class="card card-register mx-auto mt-5" style="width: 40rem;">
-        <div class="card-header">Register an Account</div>
-        <div class="card-body">
-            <form action="/register" method="post">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="namebar" style="width: 80px">Name</span>
-                    </div>
-                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="name" placeholder="이름" required="required" autofocus="autofocus">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="emailbar" style="width: 80px">Email</span>
-                    </div>
-                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="email" placeholder="이메일" required="required">
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="phonebar" style="width: 80px">Mobile</span>
-                    </div>
-                    <input type="tel" pattern="[0-9]{4}[0-9]{3}[0-9]{3}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="mobile" placeholder="핸드폰" required="required">
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="isLilacTVChecked" onclick="getLilacTVChecked()">
-                    <label class="form-check-label" for="isLilacTVChecked">라일락TV를 사용중 입니다.</label>
-                </div>
-                <span id='whereID' style="font-size: 12px; display:none"></span>
-                <div class="input-group mb-3">
-                    <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                           name="lilactvID" placeholder="제품ID" style="display:none">
-                </div>
-                <div class="form-group">
-                    <div class="form-row">
-                        <div class="col-md-6">
-                            <div class="form-label-group">
-                                <input type="password" id="inputPassword" name="pass" class="form-control" required="required">
-                                <label for="inputPassword">Password</label>
+    </head>
+    <body>
+
+        {{> navbar }}
+
+        <div id="bj" class="container">
+            <div class="card card-register mx-auto mt-5" style="width: 40rem;">
+                <div class="card-header">Register an Account</div>
+                <div class="card-body">
+                    <form action="/register" method="post">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="namebar" style="width: 80px">Name</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="name" placeholder="이름" required="required" autofocus="autofocus">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="emailbar" style="width: 80px">Email</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="email" placeholder="이메일" required="required">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="phonebar" style="width: 80px">Mobile</span>
+                            </div>
+                            <input type="tel" pattern="[0-9]{4}[0-9]{3}[0-9]{3}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="mobile" placeholder="핸드폰" required="required">
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isLilacTVChecked" onclick="getLilacTVChecked()">
+                            <label class="form-check-label" for="isLilacTVChecked">라일락TV를 사용중 입니다.</label>
+                        </div>
+                        <span id='whereID' style="font-size: 12px; display:none"></span>
+                        <div class="input-group mb-3">
+                            <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="lilactvID" placeholder="제품ID" style="display:none">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input type="password" id="inputPassword" name="pass" class="form-control" required="required">
+                                        <label for="inputPassword">Password</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input type="password" id="confirmPassword" name="cpass" class="form-control" required="required" onfocusout='check_pass()'>
+                                        <label for="confirmPassword">Confirm password</label>
+                                        <span id='message'></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-label-group">
-                                <input type="password" id="confirmPassword" name="cpass" class="form-control" required="required" onfocusout='check_pass()'>
-                                <label for="confirmPassword">Confirm password</label>
-                                <span id='message'></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary btn-block" id="submit" disabled>Register</button>
-            </form>
+                        <button type="submit" class="btn btn-primary btn-block" id="submit" disabled>Register</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-{{> stickyFooter1}}
-{{ > footer }}
+        {{> stickyFooter1}}
+        {{ > footer }}
+
+    </body>
+</html>

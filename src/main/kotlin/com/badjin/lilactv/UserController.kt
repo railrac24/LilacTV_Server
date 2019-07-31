@@ -91,6 +91,11 @@ class UserController {
 
     @GetMapping("/{id}/form")
     fun updateUserData(model: Model, @PathVariable id: Long): String {
+
+        if (id == 1L) {
+            return "redirect:/users"
+        }
+
         val user = userDB.getOne(id)
         var checked = ""
         var macID = ""
@@ -105,6 +110,26 @@ class UserController {
         model["lilactvID"] = macID
         model["user"] = user
         return "updateUser"
+    }
+
+    @GetMapping("/{id}/delete")
+    fun deleteSelected(@PathVariable id: Long): String {
+
+        if (id == 1L) {
+            return "redirect:/users"
+        }
+
+        val user = userDB.getOne(id)
+        val unit = itemDB.findByOwner(user)
+        if (unit != null) {
+            if (unit.owner?.id!! > 1L) {
+                unit.owner = userDB.getOne(1L)
+                itemDB.save(unit)
+            }
+        }
+        userDB.deleteById(id)
+
+        return "redirect:/users"
     }
 
     @PostMapping("/login")

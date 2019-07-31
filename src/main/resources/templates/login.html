@@ -1,47 +1,57 @@
-{{> header }}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
 
-<style>
-    #bj {
-        padding-top: 100px;
-        /*padding-bottom: 355px;*/
-    }
-</style>
+        {{> header }}
 
-{{> navbar }}
+        <style>
+            #bj {
+                padding-top: 100px;
+                /*padding-bottom: 355px;*/
+            }
+        </style>
 
-<div id="bj" class="container">
-    <div class="card card-login mx-auto mt-5" style="width: 40rem">
-        <div class="card-header">Login</div>
-        <div class="card-body">
-            <form action="/login" method="post">
-                <div class="form-group">
-                    <div class="form-label-group">
-                        <input type="email" id="inputEmail" name="email" class="form-control" required="required" autofocus="autofocus">
-                        <label for="inputEmail">Email address</label>
+    </head>
+    <body>
+
+        {{> navbar }}
+
+        <div id="bj" class="container">
+            <div class="card card-login mx-auto mt-5" style="width: 40rem">
+                <div class="card-header">Login</div>
+                <div class="card-body">
+                    <form action="/login" method="post">
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="email" id="inputEmail" name="email" class="form-control" required="required" autofocus="autofocus">
+                                <label for="inputEmail">Email address</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="password" id="inputPassword" name="pass" class="form-control" required="required">
+                                <label for="inputPassword">Password</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="remember-me">
+                                    Remember Password
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    </form>
+                    <div class="text-center">
+                        <a class="d-block small" href="forgot-password">Forgot Password?</a>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="form-label-group">
-                        <input type="password" id="inputPassword" name="pass" class="form-control" required="required">
-                        <label for="inputPassword">Password</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" value="remember-me">
-                            Remember Password
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
-            <div class="text-center">
-                <a class="d-block small" href="forgot-password">Forgot Password?</a>
             </div>
         </div>
-    </div>
-</div>
 
-{{> stickyFooter2}}
-{{ > footer }}
+        {{> stickyFooter2}}
+        {{ > footer }}
+
+    </body>
+</html>
