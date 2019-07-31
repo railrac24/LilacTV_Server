@@ -50,33 +50,34 @@ class UserController {
         return macID+unitID
     }
 
+    fun printAlert(msg: String, response: HttpServletResponse) {
+        val out: PrintWriter = response.writer
+        out.println(msg)
+        out.flush()
+    }
+
     fun checkingLilacTV(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
         val (mac_add, deviceID) = getMacAndID(lilactvID)
         val unit: Items? = itemDB.findByMacaddeth0(mac_add)
         val out: PrintWriter
 
-        if (unit != null) {
-            if (unit.id == deviceID) {
+        when {
+            unit != null -> if (unit.id == deviceID) {
                 if (unit.owner?.id == 1L ) {
                     unit.owner = user
                     itemDB.save(unit)
                 } else {
-                    out = response.writer
-                    out.println("<script>alert('이미 등록된 제품ID 입니다.'); history.go(-1);</script>")
-                    out.flush()
+                    printAlert("<script>alert('이미 등록된 제품ID 입니다.'); history.go(-1);</script>", response)
                     return false
                 }
             } else {
-                out = response.writer
-                out.println("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>")
-                out.flush()
+                printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
                 return false
             }
-        } else {
-            out = response.writer
-            out.println("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>")
-            out.flush()
-            return false
+            else -> {
+                printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
+                return false
+            }
         }
 
         return true
@@ -194,9 +195,7 @@ class UserController {
 
         } catch (e: Exception){
             e.printStackTrace()
-            val out: PrintWriter = response.writer
-            out.println("<script>alert('이미 등록된 이메일 주소 입니다.'); history.go(-1);</script>")
-            out.flush()
+            printAlert("<script>alert('이미 등록된 이메일 주소 입니다.'); history.go(-1);</script>", response)
             return "register"
         }
 
@@ -224,8 +223,8 @@ class UserController {
                     val (mac_add, deviceID) = getMacAndID(lilactvID)
                     val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
-                    if (unit != null) {
-                        if (unit.id == deviceID) {
+                    when {
+                        unit != null -> if (unit.id == deviceID) {
                             when {
                                 unit.owner?.id == 1L -> {
                                     unit.owner = modUser
@@ -233,20 +232,13 @@ class UserController {
                                 }
                                 unit.owner?.id == modUser.id -> userDB.save(modUser)
                                 else -> {
-                                    out = response.writer
-                                    out.println("<script>alert('This ID is already registered.'); history.go(-1);</script>")
-                                    out.flush()
+                                    printAlert("<script>alert('This ID is already registered.'); history.go(-1);</script>", response)
                                 }
                             }
                         } else {
-                            out = response.writer
-                            out.println("<script>alert('Incorrect product ID.'); history.go(-1);</script>")
-                            out.flush()
+                            printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
                         }
-                    } else {
-                        out = response.writer
-                        out.println("<script>alert('Incorrect product ID.'); history.go(-1);</script>")
-                        out.flush()
+                        else -> printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
                     }
                 } else {
                     val unit = userDB.findByEmail(email)?.let { itemDB.findByOwner(it) }
@@ -262,9 +254,7 @@ class UserController {
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                val out: PrintWriter = response.writer
-                out.println("<script>alert('This email is already registered.'); history.go(-1);</script>")
-                out.flush()
+                printAlert("<script>alert('This email is already registered.'); history.go(-1);</script>", response)
                 return "updateUser"
             }
         }
