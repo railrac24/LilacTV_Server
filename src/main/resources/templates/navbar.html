@@ -1,5 +1,5 @@
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top" xmlns:th="http://www.w3.org/1999/xhtml">
     <div class="container">
         <a class="navbar-brand" href="/index">Lilac TV</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -7,13 +7,23 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/register">Sign Up</a>
-                </li>
+                {{^session_user}}
                 <li class="nav-item">
                     <a class="nav-link" href="/login">Log In</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Sign Up</a>
+                </li>
+                {{/session_user}}
+                {{#session_user}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Log Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/{{userID}}/form">Profile</a>
+                </li>
                 <li class="nav-item dropdown">
+                    {{#admin}}
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-fw fa-table"></i>
                         <span>관리자</span>
@@ -22,7 +32,9 @@
                         <a class="dropdown-item" href="/items">Devices</a>
                         <a class="dropdown-item" href="/users">Users</a>
                     </div>
+                    {{/admin}}
                 </li>
+                {{/session_user}}
             </ul>
         </div>
     </div>

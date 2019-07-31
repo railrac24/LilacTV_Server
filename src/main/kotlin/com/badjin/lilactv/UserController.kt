@@ -133,29 +133,34 @@ class UserController {
     }
 
     @PostMapping("/login")
-    fun postLogin(model: Model,
-                  session: HttpSession,
+    fun postLogin(session: HttpSession,
                   @RequestParam(value = "email") email: String,
                   @RequestParam(value = "pass") password: String): String {
         var pageName = ""
         try {
+            val dbUser = userDB.findByEmail(email) ?: return "redirect:/login"
             val cryptoPass = crypto(password)
-            val dbUser = userDB.findByEmail(email)
 
-            if (dbUser != null) {
-                pageName = if (dbUser.password == cryptoPass) {
-                    session.setAttribute("email", dbUser.email)
-                    model["name"] = dbUser.name
-                    "main"
-                } else {
-                    "login"
-                }
+            if (dbUser.password == cryptoPass) {
+                pageName = "index"
+                session.setAttribute("session_user", dbUser)
+                session.setAttribute("admin", (dbUser.email == "admin@test.com" || dbUser.email == "railrac23@gmail.com"))
+                session.setAttribute("userID", dbUser.id)
+            } else {
+                pageName = "redirect:/login"
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return pageName
+    }
+
+    @GetMapping("/logout")
+    fun logout(session: HttpSession): String {
+        session.removeAttribute("session_user")
+        session.removeAttribute("admin")
+        session.removeAttribute("userID")
+        return "index"
     }
 
     @PostMapping("/register")
