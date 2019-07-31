@@ -9,19 +9,53 @@
             <ul class="navbar-nav ml-auto">
                 {{^session_user}}
                 <li class="nav-item">
-                    <a class="nav-link" href="/login">Log In</a>
+                    <a class="nav-link" href="/login">
+                        <i class="fas fa-fw fa-pen"></i>
+                        <span>로그인</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/register">Sign Up</a>
+                    <a class="nav-link" href="/register">
+                        <i class="fas fa-fw fa-list"></i>
+                        <span>회원등록</span>
+                    </a>
                 </li>
                 {{/session_user}}
                 {{#session_user}}
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout">Log Out</a>
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-fw fa-power-off"></i>
+                        <span>로그아웃</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/{{userID}}/form">Profile</a>
+                    <a class="nav-link" href="/{{userID}}/form">
+                        <i class="fas fa-fw fa-female"></i>
+                        <span>개인정보</span>
+                    </a>
                 </li>
+                {{/session_user}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/manual">
+                        <i class="fas fa-fw fa-book-open"></i>
+                        <span>사용자 가이드</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sendmessage">
+                        <i class="fas fa-fw fa-mail-bulk"></i>
+                        <span>의견 보내기</span>
+                    </a>
+                </li>
+                {{#session_user}}
+                {{#lilactvUser}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/firmware">
+                        <i class="fas fa-fw fa-server"></i>
+                        <span>펌웨어 다운로드</span>
+                    </a>
+                </li>
+                {{/lilactvUser}}
                 <li class="nav-item dropdown">
                     {{#admin}}
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

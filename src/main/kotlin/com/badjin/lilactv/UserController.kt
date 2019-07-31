@@ -154,8 +154,10 @@ class UserController {
 
             if (dbUser.password == cryptoPass) {
                 pageName = "index"
+                val unit = itemDB.findByOwner(dbUser)
                 session.setAttribute("session_user", dbUser)
                 session.setAttribute("admin", (dbUser.email == "admin@test.com" || dbUser.email == "railrac23@gmail.com"))
+                session.setAttribute("lilactvUser", (unit != null))
                 session.setAttribute("userID", dbUser.id)
             } else {
                 pageName = "redirect:/login"
@@ -170,6 +172,7 @@ class UserController {
     fun logout(session: HttpSession): String {
         session.removeAttribute("session_user")
         session.removeAttribute("admin")
+        session.removeAttribute("lilactvUser")
         session.removeAttribute("userID")
         return "index"
     }
