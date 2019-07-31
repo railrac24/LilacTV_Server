@@ -4,6 +4,28 @@
 
         {{> header }}
 
+        <script>
+            let rmCheck = document.getElementById("rememberMe"),
+                emailInput = document.getElementById("inputEmail");
+
+            if (localStorage.checkbox && localStorage.checkbox != "") {
+                rmCheck.setAttribute("checked", "checked");
+                emailInput.value = localStorage.username;
+            } else {
+                rmCheck.removeAttribute("checked");
+                emailInput.value = "";
+            }
+
+            function lsRememberMe() {
+                if (rmCheck.checked && emailInput.value != "") {
+                    localStorage.username = emailInput.value;
+                    localStorage.checkbox = rmCheck.value;
+                } else {
+                    localStorage.username = "";
+                    localStorage.checkbox = "";
+                }
+            }
+        </script>
         <style>
             #bj {
                 padding-top: 100px;
@@ -36,12 +58,12 @@
                         <div class="form-group">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" value="remember-me">
-                                    Remember Password
+                                    <input type="checkbox" value="lsRememberMe" id="rememberMe">
+                                    Remember Me
                                 </label>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="lsRememberMe()">Login</button>
                     </form>
                     <div class="text-center">
                         <a class="d-block small" href="forgot-password">Forgot Password?</a>

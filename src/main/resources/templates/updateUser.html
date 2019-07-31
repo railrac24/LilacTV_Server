@@ -6,41 +6,48 @@
 
         <script>
 
+            let LilacTVID = "empty";
+
             function getLilacTVChecked() {
-                var checkBox = document.getElementById("isLilacTVChecked");
-                if (checkBox.checked == true) {
-                    productID.style.display = "block";
+                const checkBox = document.getElementById("isLilacTVChecked");
+                if (checkBox.checked === true) {
+                    if (LilacTVID !== "empty") document.getElementById("productID").value = LilacTVID;
+                    document.getElementById("productID").requried = true;
+                    document.getElementById("productID").style.display = "block";
                     document.getElementById('whereID').style.color = 'darkgray';
                     document.getElementById('whereID').innerHTML = '라일락TV의 [설정]메뉴 > 서브메뉴(왼쪽메뉴) > [제품정보]에서 확인가능';
-                    whereID.style.display = "block";
+                    document.getElementById('whereID').style.display = "block";
                 }
                 else {
-                    productID.style.display = "none";
-                    whereID.style.display = "none";
+                    LilacTVID = document.getElementById("productID").value;
+                    document.getElementById("productID").value = "";
+                    document.getElementById("productID").requried = false;
+                    document.getElementById("productID").style.display = "none";
+                    document.getElementById('whereID').style.display = "none";
                 }
             }
 
             function getPasswordChecked() {
-                var checkBox = document.getElementById("isPasswordChecked");
-                if (checkBox.checked == true) {
-                    inputPassword.style.display = "block";
-                    labelPassword.style.display = "block";
-                    confirmPassword.style.display = "block";
-                    labelConfirmPassword.style.display = "block";
+                const checkBox = document.getElementById("isPasswordChecked");
+                if (checkBox.checked === true) {
+                    document.getElementById("inputPassword").style.display = "block";
+                    document.getElementById("labelPassword").style.display = "block";
+                    document.getElementById("confirmPassword").style.display = "block";
+                    document.getElementById("labelConfirmPassword").style.display = "block";
                     document.getElementById('submit').disabled = true;
                 }
                 else {
-                    inputPassword.style.display = "none";
-                    labelPassword.style.display = "none";
-                    confirmPassword.style.display = "none";
-                    labelConfirmPassword.style.display = "none";
-                    message.style.display = "none";
+                    document.getElementById("inputPassword").style.display = "none";
+                    document.getElementById("labelPassword").style.display = "none";
+                    document.getElementById("confirmPassword").style.display = "none";
+                    document.getElementById("labelConfirmPassword").style.display = "none";
+                    document.getElementById("message").style.display = "none";
                     document.getElementById('submit').disabled = false;
                 }
             }
 
             function check_pass() {
-                if (document.getElementById('inputPassword').value == document.getElementById('confirmPassword').value) {
+                if (document.getElementById('inputPassword').value === document.getElementById('confirmPassword').value) {
                     document.getElementById('message').style.color = 'green';
                     document.getElementById('message').innerHTML = 'matching';
                     document.getElementById('submit').disabled = false;

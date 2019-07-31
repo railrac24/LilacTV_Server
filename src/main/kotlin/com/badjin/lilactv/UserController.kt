@@ -194,7 +194,8 @@ class UserController {
     }
 
     @PutMapping("/updateUser")
-    fun update(  @RequestParam(value = "name") name: String,
+    fun update(session: HttpSession,
+                 @RequestParam(value = "name") name: String,
                  @RequestParam(value = "email") email: String,
                  @RequestParam(value = "mobile") mobile: String,
                  @RequestParam(value = "lilactvID") lilactvID: String,
@@ -209,6 +210,7 @@ class UserController {
                 val out: PrintWriter
                 modUser.id = userDB.findByEmail(email)?.id
 
+//                if (isChecked) {
                 if (lilactvID.isNotBlank()) {
                     val (mac_add, deviceID) = getMacAndID(lilactvID)
                     val unit: Items? = itemDB.findByMacaddeth0(mac_add)
@@ -237,7 +239,17 @@ class UserController {
                         out.println("<script>alert('Incorrect product ID.'); history.go(-1);</script>")
                         out.flush()
                     }
-                } else userDB.save(modUser)
+                } else {
+                    val unit = userDB.findByEmail(email)?.let { itemDB.findByOwner(it) }
+                    if (unit != null) {
+                        if (unit.owner?.id!! > 1L) {
+                            unit.owner = userDB.getOne(1L)
+                            itemDB.save(unit)
+                        }
+                    }
+                    userDB.save(modUser)
+                }
+
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -247,6 +259,7 @@ class UserController {
                 return "updateUser"
             }
         }
-        return "redirect:/users"
+
+        return if (session.getAttribute("admin") as Boolean) "redirect:/users" else "index"
     }
 }
