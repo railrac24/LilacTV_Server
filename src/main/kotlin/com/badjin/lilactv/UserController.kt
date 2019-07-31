@@ -85,6 +85,7 @@ class UserController {
     @GetMapping("/users")
     fun users(model: Model, session: HttpSession): String {
         session.getAttribute("session_user") ?: return "login"
+        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
 
         val owner: MutableList<Users> = userDB.findAll()
         model["owner"] = owner
@@ -93,7 +94,11 @@ class UserController {
 
     @GetMapping("/{id}/form")
     fun updateUserData(model: Model, session: HttpSession, @PathVariable id: Long): String {
-        session.getAttribute("session_user") ?: return "login"
+        val tempuser = session.getAttribute("session_user") ?: return "login"
+        val sessionUser: Users = tempuser as Users
+        if (id != sessionUser.id){
+            if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
+        }
 
         if (id == 1L) {
             return "redirect:/users"
@@ -118,6 +123,7 @@ class UserController {
     @GetMapping("/{id}/delete")
     fun deleteSelected(session: HttpSession, @PathVariable id: Long): String {
         session.getAttribute("session_user") ?: return "login"
+        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
 
         if (id == 1L) {
             return "redirect:/users"
@@ -207,8 +213,6 @@ class UserController {
                  @RequestParam(value = "cpass") cpassword: String,
                  response: HttpServletResponse): String {
 
-        session.getAttribute("session_user") ?: return "login"
-
         val cryptoPass = if (cpassword.isNotBlank()) crypto(password) else userDB.findByEmail(email)?.password
         if (cryptoPass != null) {
             try {
@@ -216,7 +220,6 @@ class UserController {
                 val out: PrintWriter
                 modUser.id = userDB.findByEmail(email)?.id
 
-//                if (isChecked) {
                 if (lilactvID.isNotBlank()) {
                     val (mac_add, deviceID) = getMacAndID(lilactvID)
                     val unit: Items? = itemDB.findByMacaddeth0(mac_add)

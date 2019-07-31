@@ -29,6 +29,8 @@ class DeviceController {
     @GetMapping("/items")
     fun items(model: Model, session: HttpSession): String {
         session.getAttribute("session_user") ?: return "login"
+        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
+
         var units: MutableList<Items>?
         if (listAllFlag) {
             units = itemDB.findAll()
