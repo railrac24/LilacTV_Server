@@ -19,45 +19,11 @@ class UserController {
     @Autowired
     lateinit var userDB: UserRepo
 
-    fun crypto(ss: String): String {
-        val sha = MessageDigest.getInstance("SHA-256")
-        val hexa = sha.digest(ss.toByteArray())
-
-        return hexa.fold("", {
-            str, it -> str + "%02x".format(it)
-        })
-    }
-
-    fun getMacAndID(id: String): Pair<String, Long> {
-        var mac: String = ""
-
-        for (i in 0..8 step 2) {
-            mac += id.substring(i,i+2) + ':'
-        }
-        mac += id.substring(10,12)
-        val unitID = id.substring(12,14).toLong(radix = 16)
-
-        return Pair(mac, unitID)
-    }
-
-    fun getLilacTVID(mac: String, index: Long?): String {
-        val macID: String = mac.replace(":","")
-        var unitID = ""
-
-        if (index != null) {
-            unitID = "%02x".format(index)
-        }
-        return macID+unitID
-    }
-
-    fun printAlert(msg: String, response: HttpServletResponse) {
-        val out: PrintWriter = response.writer
-        out.println(msg)
-        out.flush()
-    }
+    @Autowired
+    lateinit var util: Utils
 
     fun checkingLilacTV(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
-        val (mac_add, deviceID) = getMacAndID(lilactvID)
+        val (mac_add, deviceID) = util.getMacAndID(lilactvID)
         val unit: Items? = itemDB.findByMacaddeth0(mac_add)
         val out: PrintWriter
 
@@ -67,15 +33,15 @@ class UserController {
                     unit.owner = user
                     itemDB.save(unit)
                 } else {
-                    printAlert("<script>alert('이미 등록된 제품ID 입니다.'); history.go(-1);</script>", response)
+                    util.printAlert("<script>alert('이미 등록된 제품ID 입니다.'); history.go(-1);</script>", response)
                     return false
                 }
             } else {
-                printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
+                util.printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
                 return false
             }
             else -> {
-                printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
+                util.printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
                 return false
             }
         }
@@ -112,7 +78,7 @@ class UserController {
         if (unit != null) {
             if (unit.owner?.id!! > 1L) {
                 checked = "checked"
-                macID = getLilacTVID(unit.macaddeth0, unit.id)
+                macID = util.getLilacTVID(unit.macaddeth0, unit.id)
             }
         }
         model["lilactv"] = checked
@@ -150,7 +116,7 @@ class UserController {
         var pageName = ""
         try {
             val dbUser = userDB.findByEmail(email) ?: return "redirect:/login"
-            val cryptoPass = crypto(password)
+            val cryptoPass = util.crypto(password)
 
             if (dbUser.password == cryptoPass) {
                 pageName = "index"
@@ -187,7 +153,7 @@ class UserController {
                  @RequestParam(value = "cpass") cpassword: String,
                  response: HttpServletResponse): String {
         try {
-            val cryptoPass = crypto(password)
+            val cryptoPass = util.crypto(password)
 
             if (lilactvID != "") {
                 if (! checkingLilacTV(Users(name, email, mobile, cryptoPass), lilactvID, response)) {
@@ -198,7 +164,7 @@ class UserController {
 
         } catch (e: Exception){
             e.printStackTrace()
-            printAlert("<script>alert('이미 등록된 이메일 주소 입니다.'); history.go(-1);</script>", response)
+            util.printAlert("<script>alert('이미 등록된 이메일 주소 입니다.'); history.go(-1);</script>", response)
             return "register"
         }
 
@@ -215,7 +181,7 @@ class UserController {
                  @RequestParam(value = "cpass") cpassword: String,
                  response: HttpServletResponse): String {
 
-        val cryptoPass = if (cpassword.isNotBlank()) crypto(password) else userDB.findByEmail(email)?.password
+        val cryptoPass = if (cpassword.isNotBlank()) util.crypto(password) else userDB.findByEmail(email)?.password
         if (cryptoPass != null) {
             try {
                 val modUser = Users(name, email, mobile, cryptoPass)
@@ -223,7 +189,7 @@ class UserController {
                 modUser.id = userDB.findByEmail(email)?.id
 
                 if (lilactvID.isNotBlank()) {
-                    val (mac_add, deviceID) = getMacAndID(lilactvID)
+                    val (mac_add, deviceID) = util.getMacAndID(lilactvID)
                     val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
                     when {
@@ -235,13 +201,13 @@ class UserController {
                                 }
                                 unit.owner?.id == modUser.id -> userDB.save(modUser)
                                 else -> {
-                                    printAlert("<script>alert('This ID is already registered.'); history.go(-1);</script>", response)
+                                    util.printAlert("<script>alert('This ID is already registered.'); history.go(-1);</script>", response)
                                 }
                             }
                         } else {
-                            printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
+                            util.printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
                         }
-                        else -> printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
+                        else -> util.printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
                     }
                 } else {
                     val unit = userDB.findByEmail(email)?.let { itemDB.findByOwner(it) }
@@ -257,7 +223,7 @@ class UserController {
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                printAlert("<script>alert('This email is already registered.'); history.go(-1);</script>", response)
+                util.printAlert("<script>alert('This email is already registered.'); history.go(-1);</script>", response)
                 return "updateUser"
             }
         }
