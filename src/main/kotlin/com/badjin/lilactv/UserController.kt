@@ -83,14 +83,17 @@ class UserController {
     }
 
     @GetMapping("/users")
-    fun users(model: Model): String {
+    fun users(model: Model, session: HttpSession): String {
+        session.getAttribute("session_user") ?: return "login"
+
         val owner: MutableList<Users> = userDB.findAll()
         model["owner"] = owner
         return "users"
     }
 
     @GetMapping("/{id}/form")
-    fun updateUserData(model: Model, @PathVariable id: Long): String {
+    fun updateUserData(model: Model, session: HttpSession, @PathVariable id: Long): String {
+        session.getAttribute("session_user") ?: return "login"
 
         if (id == 1L) {
             return "redirect:/users"
@@ -113,7 +116,8 @@ class UserController {
     }
 
     @GetMapping("/{id}/delete")
-    fun deleteSelected(@PathVariable id: Long): String {
+    fun deleteSelected(session: HttpSession, @PathVariable id: Long): String {
+        session.getAttribute("session_user") ?: return "login"
 
         if (id == 1L) {
             return "redirect:/users"
@@ -202,6 +206,8 @@ class UserController {
                  @RequestParam(value = "pass") password: String,
                  @RequestParam(value = "cpass") cpassword: String,
                  response: HttpServletResponse): String {
+
+        session.getAttribute("session_user") ?: return "login"
 
         val cryptoPass = if (cpassword.isNotBlank()) crypto(password) else userDB.findByEmail(email)?.password
         if (cryptoPass != null) {

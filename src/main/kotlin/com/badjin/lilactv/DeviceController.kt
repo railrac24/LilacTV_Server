@@ -7,6 +7,7 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
+import javax.servlet.http.HttpSession
 
 @Controller
 class DeviceController {
@@ -26,7 +27,8 @@ class DeviceController {
     }
 
     @GetMapping("/items")
-    fun items(model: Model): String {
+    fun items(model: Model, session: HttpSession): String {
+        session.getAttribute("session_user") ?: return "login"
         var units: MutableList<Items>?
         if (listAllFlag) {
             units = itemDB.findAll()
