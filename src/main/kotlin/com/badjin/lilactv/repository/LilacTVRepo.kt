@@ -1,13 +1,8 @@
-package com.badjin.lilactv
+package com.badjin.lilactv.repository
 
+import com.badjin.lilactv.model.Items
+import com.badjin.lilactv.model.Users
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.CrudRepository
-import org.springframework.data.repository.query.Param
-import org.springframework.transaction.annotation.Transactional
-import java.util.*
-import java.security.acl.Owner
-
 
 
 interface ItemRepo: JpaRepository<Items, Long> {

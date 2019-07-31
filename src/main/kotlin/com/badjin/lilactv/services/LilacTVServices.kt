@@ -1,17 +1,16 @@
-package com.badjin.lilactv
+package com.badjin.lilactv.services
 
+import com.badjin.lilactv.repository.ItemRepo
+import com.badjin.lilactv.model.Items
+import com.badjin.lilactv.repository.UserRepo
+import com.badjin.lilactv.model.Users
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
-import org.springframework.ui.set
-import org.springframework.web.bind.annotation.*
-import java.io.PrintWriter
-import java.security.MessageDigest
+import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
-@Controller
-class UserController {
+@Service
+class LilacTVServices {
 
     @Autowired
     lateinit var itemDB: ItemRepo
@@ -22,10 +21,31 @@ class UserController {
     @Autowired
     lateinit var util: Utils
 
-    fun checkingLilacTV(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
-        val (mac_add, deviceID) = util.getMacAndID(lilactvID)
+    fun getMacAndID(id: String): Pair<String, Long> {
+        var mac: String = ""
+
+        for (i in 0..8 step 2) {
+            mac += id.substring(i,i+2) + ':'
+        }
+        mac += id.substring(10,12)
+        val unitID = id.substring(12,14).toLong(radix = 16)
+
+        return Pair(mac, unitID)
+    }
+
+    fun getProductTVID(mac: String, index: Long?): String {
+        val macID: String = mac.replace(":","")
+        var unitID = ""
+
+        if (index != null) {
+            unitID = "%02x".format(index)
+        }
+        return macID+unitID
+    }
+
+    fun updateItemInfo(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
+        val (mac_add, deviceID) = getMacAndID(lilactvID)
         val unit: Items? = itemDB.findByMacaddeth0(mac_add)
-        val out: PrintWriter
 
         when {
             unit != null -> if (unit.id == deviceID) {
@@ -49,55 +69,41 @@ class UserController {
         return true
     }
 
-    @GetMapping("/users")
-    fun users(model: Model, session: HttpSession): String {
-        session.getAttribute("session_user") ?: return "login"
-        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
+    fun getDevicesList(sortMode: Boolean): MutableList<Items>? {
+        var units: MutableList<Items>?
+        if (sortMode) {
+            units = itemDB.findAll()
+        }
+        else {
+            units = itemDB.findAllByOnline(true)
+            if (units == null) {
+                units = itemDB.findAll()
+            }
+        }
 
-        val owner: MutableList<Users> = userDB.findAll()
-        model["owner"] = owner
-        return "users"
+        return util.setIndex(units)
     }
 
-    @GetMapping("/{id}/form")
-    fun updateUserData(model: Model, session: HttpSession, @PathVariable id: Long): String {
-        val tempuser = session.getAttribute("session_user") ?: return "login"
-        val sessionUser: Users = tempuser as Users
-        if (id != sessionUser.id){
-            if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
-        }
+    fun getUserList(): MutableList<Users>? {
+        return userDB.findAll()
+    }
 
-        if (id == 1L) {
-            return "redirect:/users"
-        }
-
-        val user = userDB.getOne(id)
+    fun getSelectedUser4Edit(id: Long): Triple<Users, String, String> {
         var checked = ""
         var macID = ""
+        val user = userDB.getOne(id)
         val unit = itemDB.findByOwner(user)
         if (unit != null) {
             if (unit.owner?.id!! > 1L) {
                 checked = "checked"
-                macID = util.getLilacTVID(unit.macaddeth0, unit.id)
+                macID = getProductTVID(unit.macaddeth0, unit.id)
             }
         }
-        model["lilactv"] = checked
-        model["lilactvID"] = macID
-        model["user"] = user
-        return "updateUser"
+        return Triple(user, checked, macID)
     }
 
-    @GetMapping("/{id}/delete")
-    fun deleteSelected(session: HttpSession, @PathVariable id: Long): String {
-        session.getAttribute("session_user") ?: return "login"
-        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
-
-        if (id == 1L) {
-            return "redirect:/users"
-        }
-
-        val user = userDB.getOne(id)
-        val unit = itemDB.findByOwner(user)
+    fun deleteSelectedUser(id: Long) {
+        val unit = itemDB.findByOwner(userDB.getOne(id))
         if (unit != null) {
             if (unit.owner?.id!! > 1L) {
                 unit.owner = userDB.getOne(1L)
@@ -105,14 +111,9 @@ class UserController {
             }
         }
         userDB.deleteById(id)
-
-        return "redirect:/users"
     }
 
-    @PostMapping("/login")
-    fun postLogin(session: HttpSession,
-                  @RequestParam(value = "email") email: String,
-                  @RequestParam(value = "pass") password: String): String {
+    fun getLoginResult(session: HttpSession, email: String, password: String): String {
         var pageName = ""
         try {
             val dbUser = userDB.findByEmail(email) ?: return "redirect:/login"
@@ -134,33 +135,16 @@ class UserController {
         return pageName
     }
 
-    @GetMapping("/logout")
-    fun logout(session: HttpSession): String {
-        session.removeAttribute("session_user")
-        session.removeAttribute("admin")
-        session.removeAttribute("lilactvUser")
-        session.removeAttribute("userID")
-        return "index"
-    }
-
-    @PostMapping("/register")
-    fun register(model: Model,
-                 @RequestParam(value = "name") name: String,
-                 @RequestParam(value = "email") email: String,
-                 @RequestParam(value = "mobile") mobile: String,
-                 @RequestParam(value = "lilactvID") lilactvID: String,
-                 @RequestParam(value = "pass") password: String,
-                 @RequestParam(value = "cpass") cpassword: String,
-                 response: HttpServletResponse): String {
+    fun getRegisterResult(user: Users, lilactvID: String, response: HttpServletResponse): String {
         try {
-            val cryptoPass = util.crypto(password)
+            val cryptoPass = util.crypto(user.password)
 
             if (lilactvID != "") {
-                if (! checkingLilacTV(Users(name, email, mobile, cryptoPass), lilactvID, response)) {
+                if (! updateItemInfo(Users(user.name, user.email, user.mobile, cryptoPass), lilactvID, response)) {
                     return "register"
                 }
             } else
-                userDB.save(Users(name, email, mobile, cryptoPass))
+                userDB.save(Users(user.name, user.email, user.mobile, cryptoPass))
 
         } catch (e: Exception){
             e.printStackTrace()
@@ -171,25 +155,15 @@ class UserController {
         return "login"
     }
 
-    @PutMapping("/updateUser")
-    fun update(session: HttpSession,
-                 @RequestParam(value = "name") name: String,
-                 @RequestParam(value = "email") email: String,
-                 @RequestParam(value = "mobile") mobile: String,
-                 @RequestParam(value = "lilactvID") lilactvID: String,
-                 @RequestParam(value = "pass") password: String,
-                 @RequestParam(value = "cpass") cpassword: String,
-                 response: HttpServletResponse): String {
-
-        val cryptoPass = if (cpassword.isNotBlank()) util.crypto(password) else userDB.findByEmail(email)?.password
+    fun updateUserInfo(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
+        val cryptoPass = if (user.password.isNotBlank()) util.crypto(user.password) else userDB.findByEmail(user.email)?.password
         if (cryptoPass != null) {
             try {
-                val modUser = Users(name, email, mobile, cryptoPass)
-                val out: PrintWriter
-                modUser.id = userDB.findByEmail(email)?.id
+                val modUser = Users(user.name, user.email, user.mobile, cryptoPass)
+                modUser.id = userDB.findByEmail(user.email)?.id
 
                 if (lilactvID.isNotBlank()) {
-                    val (mac_add, deviceID) = util.getMacAndID(lilactvID)
+                    val (mac_add, deviceID) = getMacAndID(lilactvID)
                     val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
                     when {
@@ -210,7 +184,7 @@ class UserController {
                         else -> util.printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
                     }
                 } else {
-                    val unit = userDB.findByEmail(email)?.let { itemDB.findByOwner(it) }
+                    val unit = userDB.findByEmail(user.email)?.let { itemDB.findByOwner(it) }
                     if (unit != null) {
                         if (unit.owner?.id!! > 1L) {
                             unit.owner = userDB.getOne(1L)
@@ -220,14 +194,12 @@ class UserController {
                     userDB.save(modUser)
                 }
 
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 util.printAlert("<script>alert('This email is already registered.'); history.go(-1);</script>", response)
-                return "updateUser"
+                return false
             }
         }
-
-        return if (session.getAttribute("admin") as Boolean) "redirect:/users" else "index"
+        return true
     }
 }

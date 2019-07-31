@@ -1,4 +1,4 @@
-package com.badjin.lilactv
+package com.badjin.lilactv.controller
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model

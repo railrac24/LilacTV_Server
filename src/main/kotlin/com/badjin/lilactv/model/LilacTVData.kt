@@ -1,4 +1,4 @@
-package com.badjin.lilactv
+package com.badjin.lilactv.model
 
 import javax.persistence.*
 
