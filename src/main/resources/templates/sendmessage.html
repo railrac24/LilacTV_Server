@@ -2,7 +2,15 @@
 <html lang="en">
     <head>
 
-        {{> header }}
+        {{> header2 }}
+
+        <style>
+            .center {
+                margin: auto;
+                width: 60%;
+                padding: 10px;
+            }
+        </style>
 
     </head>
     <body>
@@ -14,37 +22,24 @@
                 <!-- Page Content -->
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-8 mb-4">
-                            <h3>의견 보내기</h3>
-                            <form name="sentMessage" id="contactForm" novalidate>
+                        <div class="center">
+                            <h3>게시물 작성</h3>
+                            <form action="/sendmessage" method="post">
+                                <input type="hidden" name="_method" value="put"/>
                                 <div class="control-group form-group">
                                     <div class="controls">
-                                        <label>이름:</label>
-                                        <input type="text" class="form-control" id="name" required data-validation-required-message="Please enter your name.">
+                                        <label>제목:</label>
+                                        <input type="text" class="form-control" name="title" id="title" required data-validation-required-message="제목을 입력하세요.">
                                         <p class="help-block"></p>
                                     </div>
                                 </div>
                                 <div class="control-group form-group">
                                     <div class="controls">
-                                        <label>전화번호:</label>
-                                        <input type="tel" class="form-control" id="phone" required data-validation-required-message="Please enter your phone number.">
-                                    </div>
-                                </div>
-                                <div class="control-group form-group">
-                                    <div class="controls">
-                                        <label>이메일 주소:</label>
-                                        <input type="email" class="form-control" id="email" required data-validation-required-message="Please enter your email address.">
-                                    </div>
-                                </div>
-                                <div class="control-group form-group">
-                                    <div class="controls">
                                         <label>내용:</label>
-                                        <textarea rows="10" cols="100" class="form-control" id="message" required data-validation-required-message="Please enter your message" maxlength="999" style="resize:none"></textarea>
+                                        <textarea rows="10" cols="100" class="form-control" name="content" id="message" required data-validation-required-message="내용을 작성하세요." maxlength="999" style="resize:none"></textarea>
                                     </div>
                                 </div>
-                                <div id="success"></div>
-                                <!-- For success/fail messages -->
-                                <button type="submit" class="btn btn-primary" id="sendMessageButton">보내기</button>
+                                <button type="submit" class="btn btn-primary">보내기</button>
                             </form>
                         </div>
                     </div>
@@ -55,7 +50,7 @@
         </div>
 
         {{> stickyFooter}}
-        {{> footer}}
+        {{> footer2}}
 
     </body>
 </html>

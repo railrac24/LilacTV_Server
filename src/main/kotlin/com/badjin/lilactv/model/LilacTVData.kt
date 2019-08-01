@@ -28,3 +28,11 @@ data class Items (
     @JoinColumn(name = "owner_id")
     var owner: Users?
 )
+
+@Entity
+data class Questions (
+    var writer: String,
+    var title: String,
+    var content: String,
+    @Id @GeneratedValue var id: Long? = null
+)

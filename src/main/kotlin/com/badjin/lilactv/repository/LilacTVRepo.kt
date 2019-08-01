@@ -1,6 +1,7 @@
 package com.badjin.lilactv.repository
 
 import com.badjin.lilactv.model.Items
+import com.badjin.lilactv.model.Questions
 import com.badjin.lilactv.model.Users
 import org.springframework.data.jpa.repository.JpaRepository
 
@@ -13,4 +14,8 @@ interface ItemRepo: JpaRepository<Items, Long> {
 
 interface UserRepo: JpaRepository<Users, Long> {
     fun findByEmail(email: String): Users?
+}
+
+interface QnaRepo: JpaRepository<Questions, Long> {
+
 }

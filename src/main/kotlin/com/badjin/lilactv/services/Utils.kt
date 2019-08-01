@@ -42,14 +42,13 @@ class Utils {
 
     @Throws(IOException::class)
     fun doCommand(command: List<String>, count: String): Boolean {
-        var s: String? = null
+        var s: String?
         var result: String? = null
 
         val pb = ProcessBuilder(command)
         val process = pb.start()
 
         val stdInput = BufferedReader(InputStreamReader(process.inputStream))
-        val stdError = BufferedReader(InputStreamReader(process.errorStream))
 
         // read the output from the command
         s = stdInput.readLine()

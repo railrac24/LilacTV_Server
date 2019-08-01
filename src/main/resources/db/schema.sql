@@ -30,3 +30,10 @@ CREATE TABLE IF NOT EXISTS items (
     FOREIGN KEY (owner_id) REFERENCES users(id)
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS questions (
+    writer VARCHAR(80),
+    title VARCHAR(80),
+    content TEXT(65535),
+    id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    INDEX(id)
+) engine=InnoDB DEFAULT CHARSET=utf8;
