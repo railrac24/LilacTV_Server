@@ -45,4 +45,13 @@ data class Questions (
     fun getFormattedCreateDate(): String {
         return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
     }
+
+    fun isSameWriter(user: Users): Boolean {
+        return (this.writer.id == user.id)
+    }
+
+    fun updateContent(title: String, content: String) {
+        this.title = title
+        this.content = title
+    }
 }

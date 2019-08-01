@@ -59,7 +59,7 @@ class QnaController {
         if (!mysession.isLoginUser(session)) return "redirect:/login"
         val loginUser = mysession.getUserFromSession(session) as Users
         val qnaData = qnaDB.getOne(id)
-        return if (loginUser.id == qnaData.writer.id) {
+        return if (qnaData.isSameWriter(loginUser)) {
             model["question"] = qnaDB.getOne(id)
             "updateMessage"
         } else {
@@ -76,9 +76,8 @@ class QnaController {
         if (!mysession.isLoginUser(session)) return "redirect:/login"
         val loginUser = mysession.getUserFromSession(session) as Users
         val qnaData = qnaDB.getOne(id)
-        if (loginUser.id == qnaData.writer.id) {
-            qnaData.title = title
-            qnaData.content = content
+        if (qnaData.isSameWriter(loginUser)) {
+            qnaData.updateContent(title, content)
             qnaDB.save(qnaData)
         } else throw IllegalAccessException("잘못된 접근입니다.")
         return "redirect:/qnas/$id"
@@ -89,7 +88,7 @@ class QnaController {
         if (!mysession.isLoginUser(session)) return "redirect:/login"
         val loginUser = mysession.getUserFromSession(session) as Users
         val qnaData = qnaDB.getOne(id)
-        return if (loginUser.id == qnaData.writer.id) {
+        return if (qnaData.isSameWriter(loginUser)) {
             qnaDB.deleteById(id)
             "redirect:/qnalist"
         } else {
