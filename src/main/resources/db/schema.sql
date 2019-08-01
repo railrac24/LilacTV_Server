@@ -31,9 +31,11 @@ CREATE TABLE IF NOT EXISTS items (
 ) engine=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS questions (
-    writer VARCHAR(80),
+    writer_id TINYINT(4) UNSIGNED NOT NULL DEFAULT 1,
+    FOREIGN KEY (writer_id) REFERENCES users(id),
     title VARCHAR(80),
     content TEXT(65535),
+    create_date DATETIME,
     id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     INDEX(id)
 ) engine=InnoDB DEFAULT CHARSET=utf8;

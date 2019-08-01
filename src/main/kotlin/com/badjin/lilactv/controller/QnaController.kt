@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import javax.servlet.http.HttpSession
 
 @Controller
@@ -45,7 +43,13 @@ class QnaController {
         val loginUser = mysession.getUserFromSession(session) as Users
 
 //        println("name = ${loginUser.name}  title = $title  content = $content")
-        qnaDB.save(Questions(loginUser.name, title, content))
+        qnaDB.save(Questions(loginUser, title, content))
         return "redirect:/qnalist"
+    }
+
+    @GetMapping("/qnas/{id}")
+    fun showContent(model: Model, @PathVariable id: Long): String {
+        model["question"] = qnaDB.getOne(id)
+        return "show"
     }
 }
