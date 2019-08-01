@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <!-- Custom fonts for this template -->
+        <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="../../css/one-page-wonder.min.css" rel="stylesheet">
+
+        <!-- Custom fonts for this template-->
+        <link href="../../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+        <!-- Page level plugin CSS-->
+        <link href="../../vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+        <!-- Custom styles for this template-->
+        <link href="../../css/sb-admin.css" rel="stylesheet">
+
+        <title>LilacTV</title>
+
+        <style>
+            .center {
+                margin: auto;
+                width: 60%;
+                padding: 10px;
+            }
+        </style>
+
+    </head>
+    <body>
+
+        {{> navbar }}
+
+        <div id="content-wrapper" style="margin-top: 120px; margin-bottom: 80px">
+            <div class="container-fluid">
+                <!-- Page Content -->
+                <div class="container">
+                    <div class="row">
+                        <div class="center">
+                            <h3>질문 하기</h3>
+                            {{#question}}
+                            <form action="/sendmessage/{{id}}" method="post">
+                                <input type="hidden" name="_method" value="put"/>
+                                <div class="control-group form-group">
+                                    <div class="controls">
+                                        <label>제목:</label>
+                                        <input type="text" class="form-control" name="title" id="title" required value="{{title}}">
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                <div class="control-group form-group">
+                                    <div class="controls">
+                                        <label>내용:</label>
+                                        <textarea rows="10" cols="100" class="form-control" name="content" id="message" required maxlength="999" style="resize:none">{{content}}</textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">보내기</button>
+                            </form>
+                            {{/question}}
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+                <!-- /.container -->
+            </div>
+        </div>
+
+        {{> stickyFooter}}
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <!--    <script src="webjars/jquery/3.4.1/jquery.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+        <!--    <script src="webjars/popper.js/1.14.3/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>-->
+        <!--    <script src="webjars/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>-->
+
+        <!-- Bootstrap core JavaScript-->
+        <script src="../../vendor/jquery/jquery.min.js"></script>
+        <script src="../../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Core plugin JavaScript-->
+        <script src="../../vendor/jquery-easing/jquery.easing.min.js"></script>
+
+        <!-- Page level plugin JavaScript-->
+        <script src="../../vendor/datatables/jquery.dataTables.js"></script>
+        <script src="../../vendor/datatables/dataTables.bootstrap4.js"></script>
+
+        <!-- Custom scripts for all pages-->
+        <script src="../../js/sb-admin.min.js"></script>
+
+        <!-- Contact form JavaScript -->
+        <!-- Do not edit these files! In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+        <script src="../../js/jqBootstrapValidation.js"></script>
+        <script src="../../js/contact_me.js"></script>
+
+    </body>
+</html>

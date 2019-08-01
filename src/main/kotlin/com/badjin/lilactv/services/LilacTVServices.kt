@@ -80,16 +80,16 @@ class LilacTVServices {
         else {
             units = itemDB.findAllByOnline(true)
             if (units == null) units = itemDB.findAll()
-            else {
-                for (i  in units.indices) {
-                    if (!(util.pingTest(units[i].ipadd, system))){
-                        units[i].online = false
-                        itemDB.save(units[i])
-                    }
-                }
-                units = itemDB.findAllByOnline(true)
-                if (units == null) units = itemDB.findAll()
-            }
+//            else {
+//                for (i  in units.indices) {
+//                    if (!(util.pingTest(units[i].ipadd, system))){
+//                        units[i].online = false
+//                        itemDB.save(units[i])
+//                    }
+//                }
+//                units = itemDB.findAllByOnline(true)
+//                if (units == null) units = itemDB.findAll()
+//            }
         }
 
         return util.setIndex(units)
