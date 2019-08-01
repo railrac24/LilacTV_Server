@@ -52,6 +52,6 @@ data class Questions (
 
     fun updateContent(title: String, content: String) {
         this.title = title
-        this.content = title
+        this.content = content
     }
 }
