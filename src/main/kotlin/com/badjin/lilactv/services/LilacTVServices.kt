@@ -4,6 +4,7 @@ import com.badjin.lilactv.repository.ItemRepo
 import com.badjin.lilactv.model.Items
 import com.badjin.lilactv.repository.UserRepo
 import com.badjin.lilactv.model.Users
+import org.apache.commons.lang3.SystemUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import javax.servlet.http.HttpServletResponse
@@ -71,13 +72,23 @@ class LilacTVServices {
 
     fun getDevicesList(sortMode: Boolean): MutableList<Items>? {
         var units: MutableList<Items>?
+        val system =  if (SystemUtils.IS_OS_WINDOWS) "-n" else "-c"
+
         if (sortMode) {
             units = itemDB.findAll()
         }
         else {
             units = itemDB.findAllByOnline(true)
-            if (units == null) {
-                units = itemDB.findAll()
+            if (units == null) units = itemDB.findAll()
+            else {
+                for (i  in units.indices) {
+                    if (!(util.pingTest(units[i].ipadd, system))){
+                        units[i].online = false
+                        itemDB.save(units[i])
+                    }
+                }
+                units = itemDB.findAllByOnline(true)
+                if (units == null) units = itemDB.findAll()
             }
         }
 
