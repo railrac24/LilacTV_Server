@@ -1,5 +1,6 @@
 package com.badjin.lilactv.repository
 
+import com.badjin.lilactv.model.Answers
 import com.badjin.lilactv.model.Items
 import com.badjin.lilactv.model.Questions
 import com.badjin.lilactv.model.Users
@@ -17,5 +18,9 @@ interface UserRepo: JpaRepository<Users, Long> {
 }
 
 interface QnaRepo: JpaRepository<Questions, Long> {
+    fun findAllByWriter(writer: Users): MutableList<Questions>?
+}
 
+interface AnswerRepo: JpaRepository<Answers, Long> {
+    fun findAllByReplier(replier: Users): MutableList<Answers>?
 }

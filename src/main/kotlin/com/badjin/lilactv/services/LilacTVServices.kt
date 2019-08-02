@@ -4,6 +4,8 @@ import com.badjin.lilactv.repository.ItemRepo
 import com.badjin.lilactv.model.Items
 import com.badjin.lilactv.repository.UserRepo
 import com.badjin.lilactv.model.Users
+import com.badjin.lilactv.repository.AnswerRepo
+import com.badjin.lilactv.repository.QnaRepo
 import org.apache.commons.lang3.SystemUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -18,6 +20,12 @@ class LilacTVServices {
 
     @Autowired
     lateinit var userDB: UserRepo
+
+    @Autowired
+    lateinit var qnaDB: QnaRepo
+
+    @Autowired
+    lateinit var answerDB: AnswerRepo
 
     @Autowired
     lateinit var util: Utils
@@ -104,13 +112,18 @@ class LilacTVServices {
     }
 
     fun deleteSelectedUser(id: Long) {
-        val unit = itemDB.findByOwner(userDB.getOne(id))
+        val user = userDB.getOne(id)
+        val unit = itemDB.findByOwner(user)
+        val questions = qnaDB.findAllByWriter(user)
+        val answers = answerDB.findAllByReplier(user)
         if (unit != null) {
             if (unit.owner?.id!! > 1L) {
                 unit.owner = userDB.getOne(1L)
                 itemDB.save(unit)
             }
         }
+        if (questions != null) qnaDB.deleteAll(questions)
+        if (answers != null) answerDB.deleteAll(answers)
         userDB.deleteById(id)
     }
 
