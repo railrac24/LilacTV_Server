@@ -2,13 +2,13 @@
 <html lang="en">
     <head>
 
-        {{> header2 }}
+        {{> include/header2 }}
 
         <link href="../css/styles.css" rel="stylesheet">
     </head>
     <body>
 
-        {{> navbar }}
+        {{> include/navbar }}
 
         <div class="container" id="main">
             {{#question}}
@@ -38,16 +38,16 @@
                       <div class="article-util">
                           <ul class="article-util-list">
                               <li>
-                                  <a class="link-modify-article" href="/qnas/{{id}}/form">수정</a>
+                                  <a class="link-modify-article" href="/qna/{{id}}/form">수정</a>
                               </li>
                               <li>
-                                  <form class="form-delete" action="/qnas/{{id}}" method="POST">
+                                  <form class="form-delete" action="/qna/{{id}}" method="POST">
                                       <input type="hidden" name="_method" value="DELETE">
                                       <button class="link-delete-article" type="submit">삭제</button>
                                   </form>
                               </li>
                               <li>
-                                  <a class="link-modify-article" href="/qnalist">목록</a>
+                                  <a class="link-modify-article" href="/qna/qnaList">목록</a>
                               </li>
                           </ul>
                       </div>
@@ -131,8 +131,8 @@
             {{/question}}
         </div>
 
-        {{> stickyFooter}}
-        {{> footer2}}
+        {{> include/stickyFooter}}
+        {{> include/footer2}}
 
     </body>
 </html>

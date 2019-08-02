@@ -1,17 +1,21 @@
 package com.badjin.lilactv.controller
 
 import com.badjin.lilactv.model.Users
+import com.badjin.lilactv.repository.UserRepo
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
+import com.badjin.lilactv.services.Utils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
+import java.lang.IllegalStateException
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
 @Controller
+@RequestMapping("/users")
 class UserController {
 
     @Autowired
@@ -20,56 +24,27 @@ class UserController {
     @Autowired
     lateinit var mysession: HttpSessionUtils
 
+    @Autowired
+    lateinit var userDB: UserRepo
 
-    @GetMapping("/users")
-    fun users(model: Model, session: HttpSession): String {
-        if (!mysession.isLoginUser(session)) return "login"
-        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
-
-        model["owner"] = serviceModule.getUserList()!!
-        return "users"
-    }
-
-    @GetMapping("/{id}/form")
-    fun updateUserData(model: Model, session: HttpSession, @PathVariable id: Long): String {
-        if (!mysession.isLoginUser(session)) return "login"
-        val sessionUser = mysession.getUserFromSession(session)
-        if (sessionUser != null) {
-            if (id != sessionUser.id){
-                if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
-            }
-        }
-
-        if (id == 1L) {
-            return "redirect:/users"
-        }
-
-        val (user, checked, productID) = serviceModule.getSelectedUser4Edit(id)
-        model["lilactv"] = checked
-        model["lilactvID"] = productID
-        model["user"] = user
-        return "updateUser"
-    }
-
-    @GetMapping("/{id}/delete")
-    fun deleteSelected(session: HttpSession, @PathVariable id: Long): String {
-        if (!mysession.isLoginUser(session)) return "login"
-        if (!(session.getAttribute("admin") as Boolean)) throw IllegalAccessException("잘못된 접근입니다.")
-
-        if (id == 1L) {
-            return "redirect:/users"
-        }
-
-        serviceModule.deleteSelectedUser(id)
-
-        return "redirect:/users"
+    @GetMapping("/login")
+    fun login(): String {
+        return "/users/login"
     }
 
     @PostMapping("/login")
-    fun postLogin(session: HttpSession,
+    fun postLogin(session: HttpSession, model: Model,
                   @RequestParam(value = "email") email: String,
                   @RequestParam(value = "pass") password: String): String {
-        return serviceModule.getLoginResult(session, email, password)
+
+        try {
+            serviceModule.loginProcess(session, email, password)
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login"
+        }
+        return "redirect:/index"
+
     }
 
     @GetMapping("/logout")
@@ -77,8 +52,12 @@ class UserController {
         session.removeAttribute("session_user")
         session.removeAttribute("admin")
         session.removeAttribute("lilactvUser")
-        session.removeAttribute("userID")
-        return "index"
+        return "redirect:/index"
+    }
+
+    @GetMapping("/register")
+    fun register(): String {
+        return "/users/register"
     }
 
     @PostMapping("/register")
@@ -88,26 +67,63 @@ class UserController {
                  @RequestParam(value = "mobile") mobile: String,
                  @RequestParam(value = "lilactvID") lilactvID: String,
                  @RequestParam(value = "pass") password: String,
-                 @RequestParam(value = "cpass") cpassword: String,
-                 response: HttpServletResponse): String {
+                 @RequestParam(value = "cpass") cpassword: String
+                 ): String {
 
         val user = Users(name, email, mobile, cpassword)
-        return serviceModule.getRegisterResult(user, lilactvID, response)
+        try {
+            serviceModule.registerProcess(user, lilactvID)
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/register"
+        }
+        return "redirect:/users/login"
     }
 
-    @PutMapping("/updateUser")
-    fun update(session: HttpSession,
+    @GetMapping("/{id}/form")
+    fun updateUserData(model: Model, session: HttpSession, response: HttpServletResponse, @PathVariable id: Long): String {
+
+        try {
+            if (mysession.hasPermission(session, userDB.getOne(id))) {
+                val (user, checked, productID) = serviceModule.getSelectedUser4Edit(id)
+                model["lilactv"] = checked
+                model["lilactvID"] = productID
+                model["user"] = user
+                if (id == 1L) return "redirect:/admin/userList"
+            }
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login2"
+        }
+
+        return "/users/updateUser"
+    }
+
+    @GetMapping("/updateUser")
+    fun updateUser(): String {
+        return "/users/updateUser"
+    }
+
+    @PostMapping("/updateUser")
+    fun update(session: HttpSession, model: Model,
                  @RequestParam(value = "name") name: String,
                  @RequestParam(value = "email") email: String,
                  @RequestParam(value = "mobile") mobile: String,
                  @RequestParam(value = "lilactvID") lilactvID: String,
                  @RequestParam(value = "pass") password: String,
-                 @RequestParam(value = "cpass") cpassword: String,
-                 response: HttpServletResponse): String {
+                 @RequestParam(value = "cpass") cpassword: String
+                 ): String {
+        try {
+            serviceModule.updateUserInfo(Users(name, email, mobile, password), lilactvID)
 
-        if (!(serviceModule.updateUserInfo(Users(name, email, mobile, password), lilactvID, response)))
-            return "updateUser"
-
-        return if (session.getAttribute("admin") as Boolean) "redirect:/users" else "index"
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            val (user, checked, productID) = serviceModule.getSelectedUser4Edit(userDB.findByEmail(email)?.id!!)
+            model["lilactv"] = checked
+            model["lilactvID"] = productID
+            model["user"] = user
+            return "/users/updateUser"
+        }
+        return if (session.getAttribute("admin") as Boolean) "redirect:/admin/userList" else "redirect:/index"
     }
 }

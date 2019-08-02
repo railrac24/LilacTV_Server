@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        {{> header2 }}
+        {{> include/header3 }}
 
         <script>
 
@@ -69,15 +69,20 @@
     </head>
     <body>
 
-        {{> navbar }}
+        {{> include/navbar }}
 
         <div id="bj" class="container">
             <div class="card card-register mx-auto mt-5" style="width: 40rem;">
                 {{#user}}
+                {{#errorMsg}}
+                <div class="card-header" style="background: #cc6b80; color: #ffffff">{{errorMsg}}</div>
+                {{/errorMsg}}
+                {{^errorMsg}}
                 <div class="card-header">개인 정보 관리</div>
+                {{/errorMsg}}
                 <div class="card-body">
-                    <form action="/updateUser" method="post">
-                        <input type="hidden" name="_method" value="put"/>
+                    <form action="/users/updateUser" method="post">
+<!--                        <input type="hidden" name="_method" value="put"/>-->
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="namebar" style="width: 80px">Name</span>
@@ -139,8 +144,8 @@
             </div>
         </div>
 
-        {{> stickyFooter}}
-        {{ > footer2 }}
+        {{> include/stickyFooter}}
+        {{> include/footer3 }}
 
     </body>
 </html>

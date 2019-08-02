@@ -10,10 +10,12 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
+import java.lang.IllegalStateException
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
 @Controller
+@RequestMapping("/qna")
 class QnaController {
 
     @Autowired
@@ -25,75 +27,94 @@ class QnaController {
     @Autowired
     lateinit var util: Utils
 
-    @GetMapping("/qnalist")
+    @GetMapping("/qnaList")
     fun showList(model: Model): String {
-        val qnas = qnaDB.findAll()
-        model["qnas"] = qnas
-        return "qnalist"
+        val qna = qnaDB.findAll()
+        model["qna"] = qna
+        return "/qna/qnaList"
     }
 
-    @GetMapping("/qnas/form")
-    fun sendMessage(session: HttpSession): String {
-        if (!mysession.isLoginUser(session)) return "redirect:/login"
-        return "sendmessage"
-    }
-
-    @PutMapping("sendmessage")
-    fun saveContent(session: HttpSession,
-                 @RequestParam(value = "title") title: String,
-                 @RequestParam(value = "content") content: String): String {
-        if (!mysession.isLoginUser(session)) return "redirect:/login"
-        val loginUser = mysession.getUserFromSession(session) as Users
-        qnaDB.save(Questions(loginUser, title, content))
-        return "redirect:/qnalist"
-    }
-
-    @GetMapping("/qnas/{id}")
+    @GetMapping("/{id}")
     fun showContent(model: Model, @PathVariable id: Long): String {
         model["question"] = qnaDB.getOne(id)
-        return "show"
+        return "/qna/questionShow"
     }
 
-    @GetMapping("/qnas/{id}/form")
-    fun editContent(model: Model, @PathVariable id: Long, session: HttpSession, response: HttpServletResponse): String {
-        if (!mysession.isLoginUser(session)) return "redirect:/login"
-        val loginUser = mysession.getUserFromSession(session) as Users
-        val qnaData = qnaDB.getOne(id)
-        return if (qnaData.isSameWriter(loginUser)) {
-            model["question"] = qnaDB.getOne(id)
-            "updateMessage"
-        } else {
-            util.printAlert("<script>alert('You can edit your own post.'); history.go(-1);</script>", response)
-            "redirect:/show"
+    @GetMapping("/form")
+    fun sendMessage(model: Model, session: HttpSession): String {
+        try {
+            mysession.isLoginUser(session)
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login"
         }
+        return "/qna/questionForm"
     }
 
-    @PutMapping("/sendmessage/{id}")
-    fun updateContent(session: HttpSession,
+    @PutMapping("/questionSubmit")
+    fun saveContent(model: Model, session: HttpSession,
+                 @RequestParam(value = "title") title: String,
+                 @RequestParam(value = "content") content: String): String {
+        try {
+            val loginUser = mysession.getUserFromSession(session) as Users
+
+            qnaDB.save(Questions(loginUser, title, content))
+
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login"
+        }
+        return "redirect:/qna/qnaList"
+    }
+
+    @GetMapping("/{id}/form")
+    fun editContent(model: Model, @PathVariable id: Long, session: HttpSession): String {
+        try {
+            val qnaData = qnaDB.getOne(id)
+            mysession.hasPermission(session, qnaData.writer)
+
+            model["question"] = qnaDB.getOne(id)
+
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login2"
+        }
+        return "/qna/questionUpdate"
+    }
+
+    @PutMapping("/questionSubmit/{id}")
+    fun updateContent(model: Model, session: HttpSession,
                       @PathVariable id: Long,
                       @RequestParam(value = "title") title: String,
                       @RequestParam(value = "content") content: String): String {
-        if (!mysession.isLoginUser(session)) return "redirect:/login"
-        val loginUser = mysession.getUserFromSession(session) as Users
-        val qnaData = qnaDB.getOne(id)
-        if (qnaData.isSameWriter(loginUser)) {
+
+        try {
+            val qnaData = qnaDB.getOne(id)
+            mysession.hasPermission(session, qnaData.writer)
+
             qnaData.updateContent(title, content)
             qnaDB.save(qnaData)
-        } else throw IllegalAccessException("잘못된 접근입니다.")
-        return "redirect:/qnas/$id"
+
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login2"
+        }
+        return "redirect:/qna/$id"
     }
 
-    @DeleteMapping("/qnas/{id}")
-    fun deletePost(session: HttpSession, response: HttpServletResponse, @PathVariable id: Long): String {
-        if (!mysession.isLoginUser(session)) return "redirect:/login"
-        val loginUser = mysession.getUserFromSession(session) as Users
-        val qnaData = qnaDB.getOne(id)
-        return if (qnaData.isSameWriter(loginUser)) {
+    @DeleteMapping("/{id}")
+    fun deletePost(model: Model, session: HttpSession, @PathVariable id: Long): String {
+
+        try {
+            val qnaData = qnaDB.getOne(id)
+            mysession.hasPermission(session, qnaData.writer)
+
             qnaDB.deleteById(id)
-            "redirect:/qnalist"
-        } else {
-            util.printAlert("<script>alert('You can delete your own post.'); history.go(-1);</script>", response)
-            "redirect:/show"
+
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "/users/login2"
         }
+        return "redirect:/qna/qnaList"
     }
 }

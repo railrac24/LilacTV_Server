@@ -44,7 +44,7 @@ class LilacTVServices {
         return macID+unitID
     }
 
-    fun updateItemInfo(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
+    fun updateItemInfo(user: Users, lilactvID: String): Int {
         val (mac_add, deviceID) = getMacAndID(lilactvID)
         val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
@@ -53,26 +53,16 @@ class LilacTVServices {
                 if (unit.owner?.id == 1L ) {
                     unit.owner = user
                     itemDB.save(unit)
-                } else {
-                    util.printAlert("<script>alert('이미 등록된 제품ID 입니다.'); history.go(-1);</script>", response)
-                    return false
-                }
-            } else {
-                util.printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
-                return false
-            }
-            else -> {
-                util.printAlert("<script>alert('잘못된 제품ID 입니다.'); history.go(-1);</script>", response)
-                return false
-            }
+                } else return 1
+            } else return 2
+            else -> return 1
         }
-
-        return true
+        return 0
     }
 
     fun getDevicesList(sortMode: Boolean): MutableList<Items>? {
         var units: MutableList<Items>?
-        val system =  if (SystemUtils.IS_OS_WINDOWS) "-n" else "-c"
+//        val system =  if (SystemUtils.IS_OS_WINDOWS) "-n" else "-c"
 
         if (sortMode) {
             units = itemDB.findAll()
@@ -124,91 +114,66 @@ class LilacTVServices {
         userDB.deleteById(id)
     }
 
-    fun getLoginResult(session: HttpSession, email: String, password: String): String {
-        var pageName = ""
-        try {
-            val dbUser = userDB.findByEmail(email) ?: return "redirect:/login"
-            val cryptoPass = util.crypto(password)
+    fun loginProcess(session: HttpSession, email: String, password: String) {
 
-            if (dbUser.password == cryptoPass) {
-                pageName = "index"
-                val unit = itemDB.findByOwner(dbUser)
-                session.setAttribute("session_user", dbUser)
-                session.setAttribute("admin", (dbUser.email == "admin@test.com" || dbUser.email == "railrac23@gmail.com"))
-                session.setAttribute("lilactvUser", (unit != null))
-                session.setAttribute("userID", dbUser.id)
-            } else {
-                pageName = "redirect:/login"
+        val dbUser = userDB.findByEmail(email) ?: throw IllegalStateException("등록되지 않은 사용자 입니다.")
+        val cryptoPass = util.crypto(password)
+
+        if (dbUser.password == cryptoPass) {
+            val unit = itemDB.findByOwner(dbUser)
+            session.setAttribute("session_user", dbUser)
+            session.setAttribute("admin", (dbUser.email == "admin@test.com" || dbUser.email == "railrac23@gmail.com"))
+            session.setAttribute("lilactvUser", (unit != null))
+        } else throw IllegalStateException("비밀번호가 일치하지 않습니다.")
+    }
+
+    fun registerProcess(user: Users, lilactvID: String) {
+
+        if (userDB.findByEmail(user.email) != null) throw IllegalStateException("이미 등록된 이메일 주소 입니다.")
+
+        val cryptoPass = util.crypto(user.password)
+
+        if (lilactvID != "") {
+            when (updateItemInfo(Users(user.name, user.email, user.mobile, cryptoPass), lilactvID)) {
+                1 -> throw IllegalStateException("이미 등록된 제품ID 입니다.")
+                2 -> throw IllegalStateException("잘못된 제품ID 입니다.")
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return pageName
+        } else
+            userDB.save(Users(user.name, user.email, user.mobile, cryptoPass))
     }
 
-    fun getRegisterResult(user: Users, lilactvID: String, response: HttpServletResponse): String {
-        try {
-            val cryptoPass = util.crypto(user.password)
-
-            if (lilactvID != "") {
-                if (! updateItemInfo(Users(user.name, user.email, user.mobile, cryptoPass), lilactvID, response)) {
-                    return "register"
-                }
-            } else
-                userDB.save(Users(user.name, user.email, user.mobile, cryptoPass))
-
-        } catch (e: Exception){
-            e.printStackTrace()
-            util.printAlert("<script>alert('이미 등록된 이메일 주소 입니다.'); history.go(-1);</script>", response)
-            return "register"
-        }
-
-        return "login"
-    }
-
-    fun updateUserInfo(user: Users, lilactvID: String, response: HttpServletResponse): Boolean {
+    fun updateUserInfo(user: Users, lilactvID: String): Boolean {
         val cryptoPass = if (user.password.isNotBlank()) util.crypto(user.password) else userDB.findByEmail(user.email)?.password
         if (cryptoPass != null) {
-            try {
-                val modUser = Users(user.name, user.email, user.mobile, cryptoPass)
-                modUser.id = userDB.findByEmail(user.email)?.id
+            val modUser = Users(user.name, user.email, user.mobile, cryptoPass)
+            modUser.id = userDB.findByEmail(user.email)?.id
 
-                if (lilactvID.isNotBlank()) {
-                    val (mac_add, deviceID) = getMacAndID(lilactvID)
-                    val unit: Items? = itemDB.findByMacaddeth0(mac_add)
+            if (lilactvID.isNotBlank()) {
+                val (mac_add, deviceID) = getMacAndID(lilactvID)
+                val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
-                    when {
-                        unit != null -> if (unit.id == deviceID) {
-                            when {
-                                unit.owner?.id == 1L -> {
-                                    unit.owner = modUser
-                                    itemDB.save(unit)
-                                }
-                                unit.owner?.id == modUser.id -> userDB.save(modUser)
-                                else -> {
-                                    util.printAlert("<script>alert('This ID is already registered.'); history.go(-1);</script>", response)
-                                }
+                when {
+                    unit != null -> if (unit.id == deviceID) {
+                        when {
+                            unit.owner?.id == 1L -> {
+                                unit.owner = modUser
+                                itemDB.save(unit)
                             }
-                        } else {
-                            util.printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
+                            unit.owner?.id == modUser.id -> userDB.save(modUser)
+                            else -> throw IllegalStateException("이미 등록된 제품ID 입니다.")
                         }
-                        else -> util.printAlert("<script>alert('Incorrect product ID.'); history.go(-1);</script>", response)
-                    }
-                } else {
-                    val unit = userDB.findByEmail(user.email)?.let { itemDB.findByOwner(it) }
-                    if (unit != null) {
-                        if (unit.owner?.id!! > 1L) {
-                            unit.owner = userDB.getOne(1L)
-                            itemDB.save(unit)
-                        }
-                    }
-                    userDB.save(modUser)
+                    } else throw IllegalStateException("잘못된 제품ID 입니다.")
+                    else -> throw IllegalStateException("잘못된 제품ID 입니다.")
                 }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                util.printAlert("<script>alert('This email is already registered.'); history.go(-1);</script>", response)
-                return false
+            } else {
+                val unit = userDB.findByEmail(user.email)?.let { itemDB.findByOwner(it) }
+                if (unit != null) {
+                    if (unit.owner?.id!! > 1L) {
+                        unit.owner = userDB.getOne(1L)
+                        itemDB.save(unit)
+                    }
+                }
+                userDB.save(modUser)
             }
         }
         return true

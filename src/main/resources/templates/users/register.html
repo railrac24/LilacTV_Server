@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        {{> header }}
+        {{> include/header2 }}
 
         <script>
             function check_pass() {
@@ -42,13 +42,18 @@
     </head>
     <body>
 
-        {{> navbar }}
+        {{> include/navbar }}
 
         <div id="bj" class="container">
             <div class="card card-register mx-auto mt-5" style="width: 40rem;">
+                {{#errorMsg}}
+                <div class="card-header" style="background: #cc6b80; color: #ffffff">{{errorMsg}}</div>
+                {{/errorMsg}}
+                {{^errorMsg}}
                 <div class="card-header">회원등록</div>
+                {{/errorMsg}}
                 <div class="card-body">
-                    <form action="/register" method="post">
+                    <form action="/users/register" method="post">
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="namebar" style="width: 80px">이름</span>
@@ -103,8 +108,8 @@
             </div>
         </div>
 
-        {{ > stickyFooter}}
-        {{ > footer }}
+        {{ > include/stickyFooter}}
+        {{ > include/footer2 }}
 
     </body>
 </html>
