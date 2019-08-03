@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS questions (
     title VARCHAR(80),
     content TEXT(65535),
     create_date DATETIME,
+    count_of_answers TINYINT(4) NOT NULL DEFAULT 0,
     id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     INDEX(id)
 ) engine=InnoDB DEFAULT CHARSET=utf8;

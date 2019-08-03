@@ -36,7 +36,9 @@ class QnaController {
 
     @GetMapping("/{id}")
     fun showContent(model: Model, @PathVariable id: Long): String {
-        model["question"] = qnaDB.getOne(id)
+        var question = qnaDB.getOne(id)
+        model["question"] = question
+        model["countOfAnswers"] = question.countOfAnswers
         return "questionShow"
     }
 

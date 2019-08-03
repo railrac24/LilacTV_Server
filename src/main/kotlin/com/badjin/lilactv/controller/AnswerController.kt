@@ -34,6 +34,7 @@ class AnswerController {
             val loginUser = loginSession.getUserFromSession(session) as Users
             val question = qnaDB.getOne(questionId)
 
+            question.addAnswer()
             answerDB.save(Answers(loginUser, question, content))
 
         } catch (e: IllegalStateException) {
@@ -51,7 +52,9 @@ class AnswerController {
         try {
             val answerData = answerDB.getOne(id)
             loginSession.hasPermission(session, answerData.replier)
+            val question = qnaDB.getOne(questionId)
 
+            question.deleteAnswer()
             answerDB.deleteById(id)
 
         } catch (e: IllegalStateException) {

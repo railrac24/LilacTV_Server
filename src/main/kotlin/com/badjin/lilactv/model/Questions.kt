@@ -16,6 +16,7 @@ data class Questions (
         @JsonProperty
         var content: String,
         var createDate: LocalDateTime,
+        var countOfAnswers: Int,
         @OneToMany(mappedBy = "questions", cascade = [CascadeType.ALL])
         @OrderBy("id DESC")
         @JsonProperty
@@ -23,7 +24,7 @@ data class Questions (
         @JsonProperty
         @Id @GeneratedValue var id: Long? = null
 ) {
-    constructor(writer: Users, title: String,content: String): this(writer, title, content, LocalDateTime.now(), null)
+    constructor(writer: Users, title: String,content: String): this(writer, title, content, LocalDateTime.now(), 0,null)
     fun getFormattedCreateDate(): String {
         return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
     }
@@ -31,5 +32,13 @@ data class Questions (
     fun updateContent(title: String, content: String) {
         this.title = title
         this.content = content
+    }
+
+    fun addAnswer() {
+        this.countOfAnswers += 1
+    }
+
+    fun deleteAnswer() {
+        this.countOfAnswers -= 1
     }
 }
