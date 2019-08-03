@@ -10,13 +10,13 @@
                 {{^session_user}}
                 <li class="nav-item">
                     <a class="nav-link" href="/users/login">
-                        <i class="fas fa-fw fa-pen"></i>
+<!--                        <i class="fas fa-fw fa-pen"></i>-->
                         <span>로그인</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/users/register">
-                        <i class="fas fa-fw fa-list"></i>
+<!--                        <i class="fas fa-fw fa-list"></i>-->
                         <span>회원등록</span>
                     </a>
                 </li>
@@ -24,27 +24,27 @@
                 {{#session_user}}
                 <li class="nav-item">
                     <a class="nav-link" href="/users/logout">
-                        <i class="fas fa-fw fa-power-off"></i>
+<!--                        <i class="fas fa-fw fa-power-off"></i>-->
                         <span>로그아웃</span>
                     </a>
                 </li>
                 <li class="nav-item">
 <!--                    <a class="nav-link" href="#">-->
                     <a class="nav-link" href="/users/{{session_user.id}}/form">
-                        <i class="fas fa-fw fa-female"></i>
+<!--                        <i class="fas fa-fw fa-female"></i>-->
                         <span>개인정보</span>
                     </a>
                 </li>
                 {{/session_user}}
                 <li class="nav-item">
                     <a class="nav-link" href="/manual">
-                        <i class="fas fa-fw fa-book-open"></i>
+<!--                        <i class="fas fa-fw fa-book-open"></i>-->
                         <span>사용자 가이드</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/qna/qnaList">
-                        <i class="fas fa-fw fa-question-circle"></i>
+<!--                        <i class="fas fa-fw fa-question-circle"></i>-->
                         <span>QnA</span>
                     </a>
                 </li>
@@ -52,7 +52,7 @@
                 {{#lilactvUser}}
                 <li class="nav-item">
                     <a class="nav-link" href="/firmware">
-                        <i class="fas fa-fw fa-server"></i>
+<!--                        <i class="fas fa-fw fa-server"></i>-->
                         <span>펌웨어 다운로드</span>
                     </a>
                 </li>
@@ -60,13 +60,24 @@
                 <li class="nav-item dropdown">
                     {{#admin}}
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-fw fa-table"></i>
+<!--                        <i class="fas fa-fw fa-table"></i>-->
                         <span>관리자</span>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a class="dropdown-item" href="/admin/itemList">Devices</a>
                         <a class="dropdown-item" href="/admin/userList">Users</a>
                     </div>
+
+<!--                    <div class="dropdown">-->
+<!--                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                            Admin-->
+<!--                        </button>-->
+<!--                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--                            <a class="dropdown-item" href="/admin/itemList">Devices</a>-->
+<!--                            <a class="dropdown-item" href="/admin/userList">Users</a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
                     {{/admin}}
                 </li>
                 {{/session_user}}

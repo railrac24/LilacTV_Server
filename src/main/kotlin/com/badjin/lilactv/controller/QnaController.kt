@@ -31,13 +31,13 @@ class QnaController {
     fun showList(model: Model): String {
         val qna = qnaDB.findAll()
         model["qna"] = qna
-        return "/qna/qnaList"
+        return "qnaList"
     }
 
     @GetMapping("/{id}")
     fun showContent(model: Model, @PathVariable id: Long): String {
         model["question"] = qnaDB.getOne(id)
-        return "/qna/questionShow"
+        return "questionShow"
     }
 
     @GetMapping("/form")
@@ -46,9 +46,9 @@ class QnaController {
             mysession.isLoginUser(session)
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login"
+            return "login"
         }
-        return "/qna/questionForm"
+        return "questionForm"
     }
 
     @PutMapping("/questionSubmit")
@@ -62,7 +62,7 @@ class QnaController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login"
+            return "login"
         }
         return "redirect:/qna/qnaList"
     }
@@ -77,9 +77,9 @@ class QnaController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login2"
+            return "login"
         }
-        return "/qna/questionUpdate"
+        return "questionUpdate"
     }
 
     @PutMapping("/questionSubmit/{id}")
@@ -97,7 +97,7 @@ class QnaController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login2"
+            return "login"
         }
         return "redirect:/qna/$id"
     }
@@ -113,7 +113,7 @@ class QnaController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login2"
+            return "login"
         }
         return "redirect:/qna/qnaList"
     }

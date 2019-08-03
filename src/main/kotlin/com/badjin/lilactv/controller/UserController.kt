@@ -29,7 +29,7 @@ class UserController {
 
     @GetMapping("/login")
     fun login(): String {
-        return "/users/login"
+        return "login"
     }
 
     @PostMapping("/login")
@@ -41,7 +41,7 @@ class UserController {
             serviceModule.loginProcess(session, email, password)
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login"
+            return "login"
         }
         return "redirect:/index"
 
@@ -57,7 +57,7 @@ class UserController {
 
     @GetMapping("/register")
     fun register(): String {
-        return "/users/register"
+        return "register"
     }
 
     @PostMapping("/register")
@@ -75,7 +75,7 @@ class UserController {
             serviceModule.registerProcess(user, lilactvID)
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/register"
+            return "register"
         }
         return "redirect:/users/login"
     }
@@ -93,15 +93,15 @@ class UserController {
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login2"
+            return "login"
         }
 
-        return "/users/updateUser"
+        return "updateUser"
     }
 
     @GetMapping("/updateUser")
     fun updateUser(): String {
-        return "/users/updateUser"
+        return "updateUser"
     }
 
     @PostMapping("/updateUser")
@@ -122,7 +122,7 @@ class UserController {
             model["lilactv"] = checked
             model["lilactvID"] = productID
             model["user"] = user
-            return "/users/updateUser"
+            return "updateUser"
         }
         return if (session.getAttribute("admin") as Boolean) "redirect:/admin/userList" else "redirect:/index"
     }

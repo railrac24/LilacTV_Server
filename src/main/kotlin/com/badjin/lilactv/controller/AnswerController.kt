@@ -38,28 +38,10 @@ class AnswerController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login2"
+            return "login"
         }
         return "redirect:/qna/$questionId"
     }
-
-//    @GetMapping("/{id}/form")
-//    fun editContent(model: Model,
-//                    @PathVariable questionId: Long,
-//                    @PathVariable id: Long,
-//                    session: HttpSession): String {
-//        try {
-//            val answerData = answerDB.getOne(id)
-//            loginSession.hasPermission(session, answerData.replier)
-//
-//            model["answers"] = answerDB.getOne(id)
-//
-//        } catch (e: IllegalStateException) {
-//            model["errorMsg"] = e.message!!
-//            return "/users/login4"
-//        }
-//        return "/qna/questionUpdate"
-//    }
 
     @DeleteMapping("/{id}")
     fun deletePost(model: Model, session: HttpSession,
@@ -74,7 +56,7 @@ class AnswerController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "/users/login3"
+            return "login"
         }
         return "redirect:/qna/$questionId"
     }

@@ -1,6 +1,8 @@
 package com.badjin.lilactv.controller
 
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
+import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 
 @Controller
@@ -18,6 +20,8 @@ class LilacTVController {
 
     @GetMapping("/index")
     fun mainPage(): String {
+//        for (i in 1..5) model["path$i"] = false
+//        model["path1"] = true
         return "index"
     }
 

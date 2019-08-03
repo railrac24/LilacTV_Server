@@ -30,9 +30,9 @@ class AdminController {
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "users/login"
+            return "login"
         }
-        return "admin/userList"
+        return "userList"
     }
 
     @GetMapping("/{id}/delete")
@@ -43,10 +43,10 @@ class AdminController {
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "users/login"
+            return "login"
         }
         if (id == 1L) {
-            return "redirect:/users/userList"
+            return "redirect:/admin/userList"
         }
         return "redirect:/admin/userList"
     }
@@ -59,9 +59,9 @@ class AdminController {
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "users/login"
+            return "login"
         }
-        return "/admin/itemList"
+        return "itemList"
     }
 
     @PostMapping("/update")
@@ -72,7 +72,7 @@ class AdminController {
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "users/login"
+            return "login"
         }
         return "redirect:/admin/itemList"
     }
