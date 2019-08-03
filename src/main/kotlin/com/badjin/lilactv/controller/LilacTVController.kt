@@ -1,27 +1,22 @@
 package com.badjin.lilactv.controller
 
+import com.badjin.lilactv.services.HttpSessionUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
+import java.lang.IllegalStateException
+import javax.servlet.http.HttpSession
 
 @Controller
 class LilacTVController {
 
-//    @GetMapping("/{pageTag}")
-//    fun htmlPage(model: Model, @PathVariable pageTag: String): String {
-////        if (pageTag == "items") {
-////            return "redirect:/items"
-////        } else if (pageTag == "users") {
-////            return "redirect:/users"
-////        }
-//        return pageTag
-//    }
+    @Autowired
+    lateinit var loginSession: HttpSessionUtils
 
     @GetMapping("/index")
     fun mainPage(): String {
-//        for (i in 1..5) model["path$i"] = false
-//        model["path1"] = true
         return "index"
     }
 
@@ -36,7 +31,13 @@ class LilacTVController {
     }
 
     @GetMapping("/firmware")
-    fun firmwarePage(): String {
+    fun firmwarePage(model: Model, session: HttpSession): String {
+        try {
+            loginSession.hasLilacTV(session)
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "login"
+        }
         return "firmware"
     }
 }

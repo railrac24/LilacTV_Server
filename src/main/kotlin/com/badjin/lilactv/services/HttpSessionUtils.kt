@@ -31,4 +31,11 @@ class HttpSessionUtils {
         return true
     }
 
+    fun hasLilacTV(session: HttpSession): Boolean {
+        isLoginUser(session)
+        if (!(session.getAttribute("lilactvUser") as Boolean))
+            throw IllegalStateException("권한이 없습니다.")
+        return true
+    }
+
 }
