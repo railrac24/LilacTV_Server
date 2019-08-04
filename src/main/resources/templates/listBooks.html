@@ -74,12 +74,12 @@
 <!--                        <input type="hidden" name="size" value="{{units.size}}">-->
                         {{^active}}
                         <li class="page-item">
-                            <a class="page-link" href="/listBooks" >{{.}}</a>
+                            <a class="page-link" href="/listBooks/{{.}}/{{units.size}}" >{{.}}</a>
                         </li>
                         {{/active}}
                         {{#active}}
                         <li class="page-item active">
-                            <a class="page-link" href="/listBooks" >{{.}}</a>
+                            <a class="page-link" href="/listBooks/{{.}}/units.size" >{{.}}</a>
                         </li>
                         {{/active}}
                         {{/pageNumbers}}
