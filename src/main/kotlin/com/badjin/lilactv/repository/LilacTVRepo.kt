@@ -1,9 +1,6 @@
 package com.badjin.lilactv.repository
 
-import com.badjin.lilactv.model.Answers
-import com.badjin.lilactv.model.Items
-import com.badjin.lilactv.model.Questions
-import com.badjin.lilactv.model.Users
+import com.badjin.lilactv.model.*
 import org.springframework.data.jpa.repository.JpaRepository
 
 

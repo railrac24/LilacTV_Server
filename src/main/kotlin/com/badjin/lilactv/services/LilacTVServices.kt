@@ -8,9 +8,15 @@ import com.badjin.lilactv.repository.AnswerRepo
 import com.badjin.lilactv.repository.QnaRepo
 import org.apache.commons.lang3.SystemUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.util.*
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
+import kotlin.math.min
 
 @Service
 class LilacTVServices {
@@ -190,5 +196,22 @@ class LilacTVServices {
             }
         }
         return true
+    }
+
+    fun findPaginated(pageable: Pageable): Page<Items> {
+        val pageSize = pageable.pageSize
+        val currentPage = pageable.pageNumber
+        val startItem = currentPage * pageSize
+        val list: MutableList<Items>
+        val books = getDevicesList(true)!!
+
+        list = if (books.size < startItem) {
+            Collections.emptyList()
+        } else {
+            val toIndex = min(startItem + pageSize, books.size)
+            books.subList(startItem, toIndex)
+        }
+
+        return PageImpl(list, PageRequest.of(currentPage, pageSize), books.size.toLong())
     }
 }
