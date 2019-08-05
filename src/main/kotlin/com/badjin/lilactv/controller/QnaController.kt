@@ -32,6 +32,14 @@ class QnaController {
     @Autowired
     lateinit var serviceModule: LilacTVServices
 
+
+//    class PageMap(val size: Int) {
+//        val active = Array(size) {""}
+//        val page = Array(size) { i -> (i+1).toString() }
+//    }
+
+    data class MyPage(val active: Boolean, val page: String)
+
     @GetMapping("/qnaList/{page}/{size}")
     fun showList(model: Model,
                  @PathVariable page: Optional<Int>,
@@ -40,28 +48,21 @@ class QnaController {
         val currentPage = page.orElse(1)
         val pageSize = size.orElse(5)
         val qna = serviceModule.findPaginated(PageRequest.of(currentPage - 1, pageSize))
-        val actives = Array(qna.totalPages) {false}
-        actives[currentPage-1] = true
+        val active = Array(qna.totalPages) {false}
+        active[currentPage-1] = true
         model["qna"] = qna
 
         val totalPages = qna.totalPages
         if (totalPages > 0) {
             val pageNumbers = Array(totalPages) { i -> (i+1).toString() }
             val pageMap = mutableMapOf<String, Boolean>()
-            for (i in 1..totalPages) {
-                pageMap[i.toString()] = actives[i]
-                print("value = ${pageMap[i.toString()]}")
+            for (i in 0 until totalPages) {
+                pageMap[pageNumbers[i]] = active[i]
+                print("pages = ${pageMap.keys}, active = ${pageMap.values}\n")
             }
-//            for (i in pageNumbers) print("i = $i,")
-
             model["pageNumbers"] = pageNumbers
-//            model["active"] = actives
-
             if (currentPage == 1) model["firstPage"] = true
             if (currentPage == totalPages) model["lastPage"] = true
-
-//            for (i in pageNumbers) print("i = $i,")
-            println("total = ${qna.totalPages}, pages = $pageMap, current = ${qna.number}")
         }
 
         return "qnaList"
