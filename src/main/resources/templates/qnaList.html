@@ -48,16 +48,16 @@
                             </li>
                             {{/firstPage}}
                             {{#pageNumbers}}
-                            {{^value}}
+                            {{^active}}
                             <li class="page-item">
-                                <a class="page-link" href="/qna/qnaList/{{.}}/{{qna.size}}" >{{key}}</a>
+                                <a class="page-link" href="/qna/qnaList/{{.}}/{{qna.size}}" >{{.}}</a>
                             </li>
-                            {{/value}}
-                            {{#value}}
+                            {{/active}}
+                            {{#active}}
                             <li class="page-item active">
-                                <a class="page-link" href="/qna/qnaList/{{.}}/{{qna.size}}">{{key}}</a>
+                                <a class="page-link" href="/qna/qnaList/{{.}}/{{qna.size}}">{{.}}</a>
                             </li>
-                            {{/value}}
+                            {{/active}}
                             {{/pageNumbers}}
                             {{^lastPage}}
                             <li class="page-item">

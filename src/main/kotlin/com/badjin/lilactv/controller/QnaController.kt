@@ -54,7 +54,7 @@ class QnaController {
             }
 //            for (i in pageNumbers) print("i = $i,")
 
-            model["pageNumbers"] = pageMap
+            model["pageNumbers"] = pageNumbers
 //            model["active"] = actives
 
             if (currentPage == 1) model["firstPage"] = true
