@@ -49,6 +49,9 @@ class QnaController {
         val pageSize = size.orElse(5)
         val qna = serviceModule.findPaginated(PageRequest.of(currentPage - 1, pageSize))
         val active = Array(qna.totalPages) {false}
+
+        val mypage = MutableList<MyPage>(qna.totalPages)
+
         active[currentPage-1] = true
         model["qna"] = qna
 
@@ -57,6 +60,7 @@ class QnaController {
             val pageNumbers = Array(totalPages) { i -> (i+1).toString() }
             val pageMap = mutableMapOf<String, Boolean>()
             for (i in 0 until totalPages) {
+                mypage.add(MyPage(active[i],pageNumbers[i]))
                 pageMap[pageNumbers[i]] = active[i]
                 print("pages = ${pageMap.keys}, active = ${pageMap.values}\n")
             }
