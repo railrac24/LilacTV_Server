@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
     <head>
 
         {{> include/header }}
@@ -8,6 +8,12 @@
 
             function submitForm() {
                 document.getElementById("updateList").submit();
+            }
+
+            function isCurrentPage() {
+                document.getElementById('currentPage').className = "page-item active";
+                // if (index === (page+1)) document.getElementById('currentPage').className = "page-item active"
+                // else document.getElementById('currentPage').className = "page-item"
             }
 
         </script>
@@ -40,20 +46,27 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {{#units}}
-                    <tr>
-                        <td>{{seqindex}}</td>
-                        <td>{{owner.name}}</td>
-                        <td>{{macaddeth0}}</td>
-                        <td>{{ipadd}}</td>
-                        <td>{{online}}</td>
-                    </tr>
-                    {{/units}}
+                        {{#units}}
+                        <tr>
+                            <td>{{seqindex}}</td>
+                            <td>{{owner.name}}</td>
+                            <td>{{macaddeth0}}</td>
+                            <td>{{ipadd}}</td>
+                            <td>{{online}}</td>
+                        </tr>
+                        {{/units}}
+<!--                        <tr th:each="item : ${units}">-->
+<!--                            <td th:text="${item.seqindex}">index</td>-->
+<!--                            <td th:text="${item.owner.name}">name</td>-->
+<!--                            <td th:text="${item.macaddeth0}">mac</td>-->
+<!--                            <td th:text="${item.ipadd}">ip</td>-->
+<!--                            <td th:text="${item.online}">online</td>-->
+<!--                        </tr>-->
                     </tbody>
                 </table>
 <!--                <div th:if="${units.totalPages > 0}" class="pagination"-->
 <!--                     th:each="pageNumber : ${pageNumbers}">-->
-<!--                    <a th:href="@{/itemList(size=${units.size}, page=${pageNumber})}"-->
+<!--                    <a th:href="@{/listBooks(size=${units.size}, page=${pageNumbers})}"-->
 <!--                       th:text=${pageNumber}-->
 <!--                       th:class="${pageNumber==units.number + 1} ? active"></a>-->
 <!--                </div>-->
@@ -70,8 +83,6 @@
                         </li>
                         {{/firstPage}}
                         {{#pageNumbers}}
-<!--                        <input type="hidden" name="page" value="{{units.number}}">-->
-<!--                        <input type="hidden" name="size" value="{{units.size}}">-->
                         {{^active}}
                         <li class="page-item">
                             <a class="page-link" href="/listBooks/{{.}}/{{units.size}}" >{{.}}</a>
@@ -79,7 +90,7 @@
                         {{/active}}
                         {{#active}}
                         <li class="page-item active">
-                            <a class="page-link" href="/listBooks/{{.}}/units.size" >{{.}}</a>
+                            <a class="page-link" href="/listBooks/{{.}}/{{units.size}}">{{.}}</a>
                         </li>
                         {{/active}}
                         {{/pageNumbers}}
@@ -95,44 +106,11 @@
                 </div>
                 <div class="col-md-3"></div>
 
-
-<!--                <div class="pagination">-->
-<!--                    <ul>-->
-<!--                        {{^firstPage}}-->
-<!--                        <li>-->
-<!--                            <a href="#">-->
-<!--                                &laquo;-->
-<!--                            </a>-->
-<!--                        </li>-->
-<!--                        {{/firstPage}}-->
-<!--                        {{#pageNumbers}}-->
-<!--                        {{^active}}-->
-<!--                        <li>-->
-<!--                            <a href="#">{{.}}</a>-->
-<!--                        </li>-->
-<!--                        {{/active}}-->
-<!--                        {{#active}}-->
-<!--                        <li class="active">-->
-<!--                            <a href="#">{{.}}</a>-->
-<!--                        </li>-->
-<!--                        {{/active}}-->
-<!--                        {{/pageNumbers}}-->
-<!--                        {{^lastPage}}-->
-<!--                        <li>-->
-<!--                            <a href="#">-->
-<!--                                &raquo;-->
-<!--                            </a>-->
-<!--                        </li>-->
-<!--                        {{/lastPage}}-->
-<!--                    </ul>-->
-<!--                </div>-->
-
-
             </div>
         </div>
 
         {{> include/stickyFooter}}
-        {{> include/footer}}
+        {{> include/footer }}
 
     </body>
 </html>

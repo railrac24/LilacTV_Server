@@ -4,14 +4,16 @@ import com.badjin.lilactv.model.Questions
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.repository.QnaRepo
 import com.badjin.lilactv.services.HttpSessionUtils
+import com.badjin.lilactv.services.LilacTVServices
 import com.badjin.lilactv.services.Utils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
-import javax.servlet.http.HttpServletResponse
+import java.util.*
 import javax.servlet.http.HttpSession
 
 @Controller
@@ -19,7 +21,7 @@ import javax.servlet.http.HttpSession
 class QnaController {
 
     @Autowired
-    lateinit var mysession: HttpSessionUtils
+    lateinit var loginSession: HttpSessionUtils
 
     @Autowired
     lateinit var qnaDB: QnaRepo
@@ -27,10 +29,41 @@ class QnaController {
     @Autowired
     lateinit var util: Utils
 
-    @GetMapping("/qnaList")
-    fun showList(model: Model): String {
-        val qna = qnaDB.findAll()
+    @Autowired
+    lateinit var serviceModule: LilacTVServices
+
+    @GetMapping("/qnaList/{page}/{size}")
+    fun showList(model: Model,
+                 @PathVariable page: Optional<Int>,
+                 @PathVariable size: Optional<Int>): String {
+
+        val currentPage = page.orElse(1)
+        val pageSize = size.orElse(5)
+        val qna = serviceModule.findPaginated(PageRequest.of(currentPage - 1, pageSize))
+        val actives = Array(qna.totalPages) {false}
+        actives[currentPage-1] = true
         model["qna"] = qna
+
+        val totalPages = qna.totalPages
+        if (totalPages > 0) {
+            val pageNumbers = Array(totalPages) { i -> (i+1).toString() }
+            val pageMap = mutableMapOf<String, Boolean>()
+            for (i in 1..totalPages) {
+                pageMap[i.toString()] = actives[i]
+                print("value = ${pageMap[i.toString()]}")
+            }
+//            for (i in pageNumbers) print("i = $i,")
+
+            model["pageNumbers"] = pageMap
+//            model["active"] = actives
+
+            if (currentPage == 1) model["firstPage"] = true
+            if (currentPage == totalPages) model["lastPage"] = true
+
+//            for (i in pageNumbers) print("i = $i,")
+            println("total = ${qna.totalPages}, pages = $pageMap, current = ${qna.number}")
+        }
+
         return "qnaList"
     }
 
@@ -45,7 +78,7 @@ class QnaController {
     @GetMapping("/form")
     fun sendMessage(model: Model, session: HttpSession): String {
         try {
-            mysession.isLoginUser(session)
+            loginSession.isLoginUser(session)
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
             return "login"
@@ -58,7 +91,7 @@ class QnaController {
                  @RequestParam(value = "title") title: String,
                  @RequestParam(value = "content") content: String): String {
         try {
-            val loginUser = mysession.getUserFromSession(session) as Users
+            val loginUser = loginSession.getUserFromSession(session) as Users
 
             qnaDB.save(Questions(loginUser, title, content))
 
@@ -73,7 +106,7 @@ class QnaController {
     fun editContent(model: Model, @PathVariable id: Long, session: HttpSession): String {
         try {
             val qnaData = qnaDB.getOne(id)
-            mysession.hasPermission(session, qnaData.writer)
+            loginSession.hasPermission(session, qnaData.writer)
 
             model["question"] = qnaDB.getOne(id)
 
@@ -92,7 +125,7 @@ class QnaController {
 
         try {
             val qnaData = qnaDB.getOne(id)
-            mysession.hasPermission(session, qnaData.writer)
+            loginSession.hasPermission(session, qnaData.writer)
 
             qnaData.updateContent(title, content)
             qnaDB.save(qnaData)
@@ -109,7 +142,7 @@ class QnaController {
 
         try {
             val qnaData = qnaDB.getOne(id)
-            mysession.hasPermission(session, qnaData.writer)
+            loginSession.hasPermission(session, qnaData.writer)
 
             qnaDB.deleteById(id)
 

@@ -2,6 +2,7 @@ package com.badjin.lilactv.services
 
 import com.badjin.lilactv.repository.ItemRepo
 import com.badjin.lilactv.model.Items
+import com.badjin.lilactv.model.Questions
 import com.badjin.lilactv.repository.UserRepo
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.repository.AnswerRepo
@@ -198,20 +199,20 @@ class LilacTVServices {
         return true
     }
 
-    fun findPaginated(pageable: Pageable): Page<Items> {
+    fun findPaginated(pageable: Pageable): Page<Questions> {
         val pageSize = pageable.pageSize
         val currentPage = pageable.pageNumber
         val startItem = currentPage * pageSize
-        val list: MutableList<Items>
-        val books = getDevicesList(true)!!
+        val list: MutableList<Questions>
+        val questions = qnaDB.findAll()
 
-        list = if (books.size < startItem) {
+        list = if (questions.size < startItem) {
             Collections.emptyList()
         } else {
-            val toIndex = min(startItem + pageSize, books.size)
-            books.subList(startItem, toIndex)
+            val toIndex = min(startItem + pageSize, questions.size)
+            questions.subList(startItem, toIndex)
         }
 
-        return PageImpl(list, PageRequest.of(currentPage, pageSize), books.size.toLong())
+        return PageImpl(list, PageRequest.of(currentPage, pageSize), questions.size.toLong())
     }
 }
