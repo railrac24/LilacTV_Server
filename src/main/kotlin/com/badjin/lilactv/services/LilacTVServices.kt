@@ -1,5 +1,6 @@
 package com.badjin.lilactv.services
 
+import com.badjin.lilactv.model.Answers
 import com.badjin.lilactv.repository.ItemRepo
 import com.badjin.lilactv.model.Items
 import com.badjin.lilactv.model.Questions
@@ -102,11 +103,69 @@ class LilacTVServices {
         return userDB.findAll()
     }
 
+    fun findUserByEmail(email: String): Users? {
+        return userDB.findByEmail(email)
+    }
+
+    fun findUserById(id: Long): Users? {
+        return userDB.getOne(id)
+    }
+
+    fun isRegisteredEmail(email: String): Users {
+        return (userDB.findByEmail(email) ?: throw IllegalStateException("등록되지 않은 Email 주소 입니다."))
+    }
+
+    fun findUserByResetToken(resetToken: String): Users? {
+        return userDB.findByEmail(resetToken)
+    }
+
+    fun saveUser(user: Users) {
+        userDB.save(user)
+    }
+
+    fun findQnaById(id: Long): Questions? {
+        return qnaDB.getOne(id)
+    }
+
+    fun saveQna(question: Questions) {
+        qnaDB.save(question)
+    }
+
+    fun deleteQnaById(id: Long) {
+        qnaDB.deleteById(id)
+    }
+
+    fun findAnswerById(id: Long): Answers? {
+        return answerDB.getOne(id)
+    }
+
+    fun saveAnswer(answers: Answers) {
+        answerDB.save(answers)
+    }
+
+    fun deleteAnswerById(id: Long) {
+        answerDB.deleteById(id)
+    }
+
     fun getSelectedUser4Edit(id: Long): Triple<Users, String, String> {
         var checked = ""
         var macID = ""
         val user = userDB.getOne(id)
         val unit = itemDB.findByOwner(user)
+        if (unit != null) {
+            if (unit.owner?.id!! > 1L) {
+                checked = "checked"
+                macID = getProductTVID(unit.macaddeth0, unit.id)
+            }
+        }
+        return Triple(user, checked, macID)
+    }
+
+    fun getSelectedUser4Edit(email: String): Triple<Users?, String, String> {
+        var checked = ""
+        var macID = ""
+        val user = userDB.findByEmail(email)
+        val unit = user?.let { itemDB.findByOwner(it) }
         if (unit != null) {
             if (unit.owner?.id!! > 1L) {
                 checked = "checked"

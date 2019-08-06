@@ -2,10 +2,8 @@ package com.badjin.lilactv.controller
 
 import com.badjin.lilactv.model.Questions
 import com.badjin.lilactv.model.Users
-import com.badjin.lilactv.repository.QnaRepo
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
-import com.badjin.lilactv.services.Utils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Controller
@@ -14,9 +12,7 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
 import java.util.*
-import javax.persistence.criteria.CriteriaBuilder
 import javax.servlet.http.HttpSession
-import kotlin.collections.ArrayList
 
 @Controller
 @RequestMapping("/qna")
@@ -24,12 +20,6 @@ class QnaController {
 
     @Autowired
     lateinit var loginSession: HttpSessionUtils
-
-    @Autowired
-    lateinit var qnaDB: QnaRepo
-
-    @Autowired
-    lateinit var util: Utils
 
     @Autowired
     lateinit var serviceModule: LilacTVServices
@@ -75,9 +65,11 @@ class QnaController {
 
     @GetMapping("/{id}")
     fun showContent(model: Model, @PathVariable id: Long): String {
-        val question = qnaDB.getOne(id)
-        model["question"] = question
-        model["countOfAnswers"] = question.countOfAnswers
+        val question = serviceModule.findQnaById(id)
+        if (question != null) {
+            model["question"] = question
+            model["countOfAnswers"] = question.countOfAnswers
+        }
         model["currentPage"] = cuPage
         return "questionShow"
     }
@@ -100,7 +92,7 @@ class QnaController {
         try {
             val loginUser = loginSession.getUserFromSession(session) as Users
 
-            qnaDB.save(Questions(loginUser, title, content))
+            serviceModule.saveQna(Questions(loginUser, title, content))
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -112,10 +104,10 @@ class QnaController {
     @GetMapping("/{id}/form")
     fun editContent(model: Model, @PathVariable id: Long, session: HttpSession): String {
         try {
-            val qnaData = qnaDB.getOne(id)
-            loginSession.hasPermission(session, qnaData.writer)
+            val qnaData = serviceModule.findQnaById(id)
+            loginSession.hasPermission(session, qnaData!!.writer.id)
 
-            model["question"] = qnaDB.getOne(id)
+            model["question"] = qnaData
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -131,11 +123,11 @@ class QnaController {
                       @RequestParam(value = "content") content: String): String {
 
         try {
-            val qnaData = qnaDB.getOne(id)
-            loginSession.hasPermission(session, qnaData.writer)
+            val qnaData = serviceModule.findQnaById(id)
+            loginSession.hasPermission(session, qnaData!!.writer.id)
 
             qnaData.updateContent(title, content)
-            qnaDB.save(qnaData)
+            serviceModule.saveQna(qnaData)
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -148,10 +140,10 @@ class QnaController {
     fun deletePost(model: Model, session: HttpSession, @PathVariable id: Long): String {
 
         try {
-            val qnaData = qnaDB.getOne(id)
-            loginSession.hasPermission(session, qnaData.writer)
+            val qnaData = serviceModule.findQnaById(id)
+            loginSession.hasPermission(session, qnaData!!.writer.id)
 
-            qnaDB.deleteById(id)
+            serviceModule.deleteQnaById(id)
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!

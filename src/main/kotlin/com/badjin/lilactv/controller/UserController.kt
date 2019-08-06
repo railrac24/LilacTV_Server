@@ -1,10 +1,8 @@
 package com.badjin.lilactv.controller
 
 import com.badjin.lilactv.model.Users
-import com.badjin.lilactv.repository.UserRepo
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
-import com.badjin.lilactv.services.Utils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -22,10 +20,7 @@ class UserController {
     lateinit var serviceModule: LilacTVServices
 
     @Autowired
-    lateinit var mysession: HttpSessionUtils
-
-    @Autowired
-    lateinit var userDB: UserRepo
+    lateinit var loginSession: HttpSessionUtils
 
     @GetMapping("/login")
     fun login(): String {
@@ -84,7 +79,7 @@ class UserController {
     fun updateUserData(model: Model, session: HttpSession, response: HttpServletResponse, @PathVariable id: Long): String {
 
         try {
-            if (mysession.hasPermission(session, userDB.getOne(id))) {
+            if (loginSession.hasPermission(session,id)) {
                 val (user, checked, productID) = serviceModule.getSelectedUser4Edit(id)
                 model["lilactv"] = checked
                 model["lilactvID"] = productID
@@ -118,10 +113,12 @@ class UserController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            val (user, checked, productID) = serviceModule.getSelectedUser4Edit(userDB.findByEmail(email)?.id!!)
+            val (user, checked, productID) = serviceModule.getSelectedUser4Edit(email)
             model["lilactv"] = checked
             model["lilactvID"] = productID
-            model["user"] = user
+            if (user != null) {
+                model["user"] = user
+            }
             return "updateUser"
         }
         return if (session.getAttribute("admin") as Boolean) "redirect:/admin/userList" else "redirect:/index"

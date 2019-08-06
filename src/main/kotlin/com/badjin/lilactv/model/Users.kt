@@ -16,10 +16,11 @@ data class Users (
         var mobile: String,
         @JsonIgnore
         var password: String,
+        var resetToken: String?,
 //    @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL])
 //    var lilactv: MutableList<Items>?,
         @JsonProperty
         @Id @GeneratedValue var id: Long? = null
 ){
-//    constructor(name: String, email: String, mobile: String, password: String): this(name, email, mobile, password, null)
+    constructor(name: String, email: String, mobile: String, password: String): this(name, email, mobile, password, null)
 }

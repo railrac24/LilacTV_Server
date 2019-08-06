@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(80),
     mobile VARCHAR(30),
     password VARCHAR(80),
+    reset_token VARCHAR(36),
     id TINYINT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     INDEX(email)
 ) engine=InnoDB DEFAULT CHARSET=utf8;

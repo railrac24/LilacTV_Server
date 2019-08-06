@@ -12,6 +12,7 @@ interface ItemRepo: JpaRepository<Items, Long> {
 
 interface UserRepo: JpaRepository<Users, Long> {
     fun findByEmail(email: String): Users?
+    fun findByResetToken(resetToken: String): Users?
 }
 
 interface QnaRepo: JpaRepository<Questions, Long> {

@@ -5,6 +5,7 @@ import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.repository.AnswerRepo
 import com.badjin.lilactv.repository.QnaRepo
 import com.badjin.lilactv.services.HttpSessionUtils
+import com.badjin.lilactv.services.LilacTVServices
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -21,10 +22,7 @@ class AnswerController {
     lateinit var loginSession: HttpSessionUtils
 
     @Autowired
-    lateinit var qnaDB: QnaRepo
-
-    @Autowired
-    lateinit var answerDB: AnswerRepo
+    lateinit var serviceModule: LilacTVServices
 
     @PostMapping("")
     fun create(model: Model, session: HttpSession,
@@ -32,10 +30,10 @@ class AnswerController {
                @RequestParam(value = "content") content: String): String {
         try {
             val loginUser = loginSession.getUserFromSession(session) as Users
-            val question = qnaDB.getOne(questionId)
+            val question = serviceModule.findQnaById(questionId)
 
-            question.addAnswer()
-            answerDB.save(Answers(loginUser, question, content))
+            question!!.addAnswer()
+            serviceModule.saveAnswer(Answers(loginUser, question, content))
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -50,12 +48,12 @@ class AnswerController {
                    @PathVariable id: Long): String {
 
         try {
-            val answerData = answerDB.getOne(id)
-            loginSession.hasPermission(session, answerData.replier)
-            val question = qnaDB.getOne(questionId)
+            val answerData = serviceModule.findAnswerById(id)
+            loginSession.hasPermission(session, answerData!!.replier.id)
+            val question = serviceModule.findQnaById(questionId)
 
-            question.deleteAnswer()
-            answerDB.deleteById(id)
+            question!!.deleteAnswer()
+            serviceModule.deleteAnswerById(id)
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!

@@ -31,6 +31,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mustache")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+
     implementation("org.springframework.boot:spring-boot-starter-web")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -43,7 +45,6 @@ dependencies {
     implementation("org.webjars:jquery:$jQueryVersion")
     implementation("org.webjars:jquery-ui:$jQueryUIVersion")
     implementation("org.webjars:bootstrap:$boostrapVersion")
-
 }
 
 tasks.withType<KotlinCompile> {

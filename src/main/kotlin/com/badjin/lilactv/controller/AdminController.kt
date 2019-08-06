@@ -20,12 +20,12 @@ class AdminController {
     lateinit var serviceModule: LilacTVServices
 
     @Autowired
-    lateinit var mysession: HttpSessionUtils
+    lateinit var loginSession: HttpSessionUtils
 
     @GetMapping("/userList")
     fun users(model: Model, session: HttpSession): String {
         try {
-            if (mysession.hasPermission(session)) {
+            if (loginSession.hasPermission(session)) {
                 model["owner"] = serviceModule.getUserList()!!
             }
         } catch (e: IllegalStateException) {
@@ -38,7 +38,7 @@ class AdminController {
     @GetMapping("/{id}/delete")
     fun deleteSelected(session: HttpSession, model: Model, @PathVariable id: Long): String {
         try {
-            if (mysession.hasPermission(session)) {
+            if (loginSession.hasPermission(session)) {
                 serviceModule.deleteSelectedUser(id)
             }
         } catch (e: IllegalStateException) {
@@ -54,7 +54,7 @@ class AdminController {
     @GetMapping("/itemList")
     fun items(model: Model, session: HttpSession): String {
         try {
-            if (mysession.hasPermission(session)) {
+            if (loginSession.hasPermission(session)) {
                 model["units"] = serviceModule.getDevicesList(listAllFlag)!!
             }
         } catch (e: IllegalStateException) {
@@ -67,7 +67,7 @@ class AdminController {
     @PostMapping("/update")
     fun update(model: Model, session: HttpSession, @RequestParam(name = "ListMode") sortMode: String): String {
         try {
-            if (mysession.hasPermission(session)) {
+            if (loginSession.hasPermission(session)) {
                 listAllFlag = sortMode == "all"
             }
         } catch (e: IllegalStateException) {
