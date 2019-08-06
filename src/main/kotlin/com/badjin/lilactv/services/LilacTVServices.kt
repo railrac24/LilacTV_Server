@@ -7,7 +7,6 @@ import com.badjin.lilactv.repository.UserRepo
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.repository.AnswerRepo
 import com.badjin.lilactv.repository.QnaRepo
-import org.apache.commons.lang3.SystemUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -15,7 +14,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
-import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 import kotlin.math.min
 
@@ -199,12 +197,34 @@ class LilacTVServices {
         return true
     }
 
+    data class MyPage(val active: Boolean, val page: String)
+
+    val pageTagSize = 10
+    val pageListSize = 8
+
+    fun getMyPage(size: Int, currentPage: Int): ArrayList<MyPage> {
+        val myPage = arrayListOf<MyPage>()
+        val pageTag = currentPage / pageTagSize
+        val startPageTag = pageTag * pageTagSize
+        val endPageTag = if ((startPageTag+(pageTagSize-1)) <= (size-1)) startPageTag+2 else size-1
+
+        for (i in startPageTag .. endPageTag)
+            myPage.add(MyPage((currentPage == i), (i+1).toString()))
+        return myPage
+    }
+
     fun findPaginated(pageable: Pageable): Page<Questions> {
         val pageSize = pageable.pageSize
-        val currentPage = pageable.pageNumber
+
+        val currentPage = if (qnaDB.count() > 0) {
+            val tPage = if ((qnaDB.count() % pageListSize) > 0) 1 else 0
+            val totalPage = qnaDB.count() / pageListSize + tPage
+            if (pageable.pageNumber <= totalPage - 1) pageable.pageNumber else (totalPage - 1).toInt()
+        } else 0
+
         val startItem = currentPage * pageSize
         val list: MutableList<Questions>
-        val questions = qnaDB.findAll()
+        val questions = qnaDB.findAllByOrderByIdDesc()
 
         list = if (questions.size < startItem) {
             Collections.emptyList()
@@ -213,6 +233,6 @@ class LilacTVServices {
             questions.subList(startItem, toIndex)
         }
 
-        return PageImpl(list, PageRequest.of(currentPage, pageSize), questions.size.toLong())
+        return PageImpl(list, PageRequest(currentPage, pageSize), questions.size.toLong())
     }
 }

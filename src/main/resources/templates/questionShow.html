@@ -4,45 +4,9 @@
 
         {{> include/header }}
 
-        <link href="http://lilactv.com/BadJin/resources/static/css/styles.css" rel="stylesheet">
+        <link href="../css/styles.css" rel="stylesheet">
+<!--        <link href="http://lilactv.com/BadJin/resources/static/css/styles.css" rel="stylesheet">-->
 
-<!--        <script>-->
-<!--            $(".submit-write input[type=submit]").click(addAnswer);-->
-<!--            function addAnswer(e){-->
-<!--                e.preventDefault();-->
-<!--                let queryString = $(".submit-write").serialize();-->
-<!--                console.log("query : " + queryString);-->
-
-<!--                let url = $(".submit-write").attr("action");-->
-<!--                console.log("url : " + url)-->
-<!--                $.ajax({-->
-<!--                    type : 'post',-->
-<!--                    url : url,-->
-<!--                    data : queryString,-->
-<!--                    dataType :'json',-->
-<!--                    error : onError(),-->
-<!--                    success : onSuccess});-->
-<!--            }-->
-
-<!--            function onError() {-->
-
-<!--            }-->
-
-<!--            function onSuccess(data, status) {-->
-<!--                // console.log(data)-->
-<!--                let answerTemplate = $("#answerTemplate").html();-->
-<!--                let template = answerTemplate.format(data.replier.name, data.FormattedCreateDate, data.content, data.questions.id, data.id);-->
-<!--                $(".qna-comment-slipp-articles").prepend(template)-->
-<!--            }-->
-
-<!--            String.prototype.format = function () {-->
-<!--                let args = arguments;-->
-<!--                return this.replace(/{(\d+)}/g, function (match, number) {-->
-<!--                    return typeof args[number] != 'undefined'-->
-<!--                    ? args[number] : match;-->
-<!--                });-->
-<!--            };-->
-<!--        </script>-->
     </head>
     <body>
 
@@ -85,7 +49,7 @@
                                   </form>
                               </li>
                               <li>
-                                  <a class="link-modify-article" href="/qna/qnaList">목록</a>
+                                  <a class="link-modify-article" href="/qna/qnaList/{{currentPage}}/8">목록</a>
                               </li>
                           </ul>
                       </div>

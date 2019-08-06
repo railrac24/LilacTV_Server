@@ -15,6 +15,7 @@ interface UserRepo: JpaRepository<Users, Long> {
 }
 
 interface QnaRepo: JpaRepository<Questions, Long> {
+    fun findAllByOrderByIdDesc(): MutableList<Questions>
     fun findAllByWriter(writer: Users): MutableList<Questions>?
 }
 

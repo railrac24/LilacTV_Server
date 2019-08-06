@@ -157,8 +157,12 @@ h3,h4,h5 {
 .qna-list .list {
     list-style:none;
     margin:0;
-    padding:0;
-    border-top:1px solid #dadada;
+    /*padding:2em;*/
+    /*padding-top: 2em;*/
+    padding-bottom: 2em;
+    padding-left: 15em;
+    padding-right: 15em;
+    /*border-top:1px solid #dadada;*/
     font-size:14px;
 }
 

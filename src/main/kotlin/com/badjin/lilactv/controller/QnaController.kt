@@ -14,7 +14,9 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
 import java.util.*
+import javax.persistence.criteria.CriteriaBuilder
 import javax.servlet.http.HttpSession
+import kotlin.collections.ArrayList
 
 @Controller
 @RequestMapping("/qna")
@@ -32,13 +34,7 @@ class QnaController {
     @Autowired
     lateinit var serviceModule: LilacTVServices
 
-
-//    class PageMap(val size: Int) {
-//        val active = Array(size) {""}
-//        val page = Array(size) { i -> (i+1).toString() }
-//    }
-
-    data class MyPage(val active: Boolean, val page: String)
+    var cuPage: Int = 0
 
     @GetMapping("/qnaList/{page}/{size}")
     fun showList(model: Model,
@@ -46,27 +42,32 @@ class QnaController {
                  @PathVariable size: Optional<Int>): String {
 
         val currentPage = page.orElse(1)
-        val pageSize = size.orElse(5)
-        val qna = serviceModule.findPaginated(PageRequest.of(currentPage - 1, pageSize))
-        val active = Array(qna.totalPages) {false}
+        val pageSize = size.orElse(serviceModule.pageListSize)
+        val qna = serviceModule.findPaginated(PageRequest(currentPage - 1, pageSize))
 
-        val mypage = MutableList<MyPage>(qna.totalPages)
-
-        active[currentPage-1] = true
         model["qna"] = qna
+        cuPage = currentPage
 
         val totalPages = qna.totalPages
-        if (totalPages > 0) {
-            val pageNumbers = Array(totalPages) { i -> (i+1).toString() }
-            val pageMap = mutableMapOf<String, Boolean>()
-            for (i in 0 until totalPages) {
-                mypage.add(MyPage(active[i],pageNumbers[i]))
-                pageMap[pageNumbers[i]] = active[i]
-                print("pages = ${pageMap.keys}, active = ${pageMap.values}\n")
-            }
-            model["pageNumbers"] = pageNumbers
-            if (currentPage == 1) model["firstPage"] = true
-            if (currentPage == totalPages) model["lastPage"] = true
+        if (totalPages > 1) {
+            val myPage = serviceModule.getMyPage(qna.totalPages, currentPage - 1)
+            model["pageNumbers"] = myPage
+
+            if ((currentPage-1)/serviceModule.pageTagSize == 0) model["firstPage"] = true
+
+            if (currentPage == 1) model["previousPage"] = true
+            else model["previousPageNo"] = (currentPage-1).toString()
+
+            if (currentPage == totalPages) model["nextPage"] = true
+            else model["nextPageNo"] = (currentPage+1).toString()
+
+            if ((currentPage-1)/serviceModule.pageTagSize == (totalPages-1)/serviceModule.pageTagSize) model["lastPage"] = true
+            else model["lastPageNo"] = totalPages.toString()
+        } else {
+            model["firstPage"] = true
+            model["previousPage"] = true
+            model["nextPage"] = true
+            model["lastPage"] = true
         }
 
         return "qnaList"
@@ -74,9 +75,10 @@ class QnaController {
 
     @GetMapping("/{id}")
     fun showContent(model: Model, @PathVariable id: Long): String {
-        var question = qnaDB.getOne(id)
+        val question = qnaDB.getOne(id)
         model["question"] = question
         model["countOfAnswers"] = question.countOfAnswers
+        model["currentPage"] = cuPage
         return "questionShow"
     }
 
@@ -104,7 +106,7 @@ class QnaController {
             model["errorMsg"] = e.message!!
             return "login"
         }
-        return "redirect:/qna/qnaList"
+        return "redirect:/qna/qnaList/1/${serviceModule.pageListSize}"
     }
 
     @GetMapping("/{id}/form")
@@ -155,6 +157,6 @@ class QnaController {
             model["errorMsg"] = e.message!!
             return "login"
         }
-        return "redirect:/qna/qnaList"
+        return "redirect:/qna/qnaList/$cuPage/${serviceModule.pageListSize}"
     }
 }
