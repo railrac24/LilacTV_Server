@@ -43,7 +43,12 @@
         <div id="bj" class="container">
             <div class="card card-login mx-auto mt-5" style="width: 20rem">
                 {{#errorMsg}}
+                {{^colorMsg}}
                 <div class="card-header" style="background: #cc6b80; color: #ffffff">{{errorMsg}}</div>
+                {{/colorMsg}}
+                {{#colorMsg}}
+                <div class="card-header" style="background: #556acc; color: #ffffff">{{errorMsg}}</div>
+                {{/colorMsg}}
                 {{/errorMsg}}
                 {{^errorMsg}}
                 <div class="card-header">로그인</div>
@@ -70,7 +75,7 @@
                                 </label>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block" onclick="lsRememberMe()">로그인</button>
+                        <button type="submit" class="btn btn-primary btn-block" onclick="lsRememberMe()">Login</button>
                     </form>
                     <div class="text-center">
                         <a class="d-block small" href="forgot">Forgot Password?</a>

@@ -116,7 +116,11 @@ class LilacTVServices {
     }
 
     fun findUserByResetToken(resetToken: String): Users? {
-        return userDB.findByEmail(resetToken)
+        return userDB.findByResetToken(resetToken)
+    }
+
+    fun isRegisteredToken(resetToken: String): Users {
+        return (userDB.findByResetToken(resetToken) ?: throw IllegalStateException("잘못된 비밀번호 재설정 링크 입니다."))
     }
 
     fun saveUser(user: Users) {
