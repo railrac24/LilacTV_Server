@@ -41,7 +41,7 @@ class PasswordController {
 
             // Email message
             val passwordResetEmail = SimpleMailMessage()
-            passwordResetEmail.setFrom("railrac24@gmail.com")
+            passwordResetEmail.setFrom("support@lilactv.com")
             passwordResetEmail.setTo(user.email)
             passwordResetEmail.setSubject("비밀번호 재설정 안내")
             passwordResetEmail.setText("비밀번호를 재설정 하시려면 아래의 링크를 클릭하세요.\n\n$appUrl/reset?token=${user.resetToken}")
