@@ -26,7 +26,7 @@ data class Answers (
         return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
     }
 
-    fun updateContent(title: String, content: String) {
+    fun updateContent(content: String) {
         this.content = content
     }
 }

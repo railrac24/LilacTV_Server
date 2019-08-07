@@ -37,7 +37,7 @@ class PasswordController {
             user.resetToken = UUID.randomUUID().toString()
             serviceModule.saveUser(user)
 
-            val appUrl = request.scheme + "://" + request.serverName
+            val appUrl = request.scheme + "://" + request.serverName + ":8081"
 
             // Email message
             val passwordResetEmail = SimpleMailMessage()
