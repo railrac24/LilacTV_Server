@@ -36,6 +36,15 @@
                         <span>사용자 가이드</span>
                     </a>
                 </li>
+                {{#session_user}}
+                {{#lilactvUser}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/firmware">
+                        <span>펌웨어 다운로드</span>
+                    </a>
+                </li>
+                {{/lilactvUser}}
+                {{/session_user}}
                 <li class="nav-item">
                     <a class="nav-link" href="/qna/qnaList/1/8">
                         <span>QnA</span>
@@ -47,13 +56,6 @@
                     </a>
                 </li>
                 {{#session_user}}
-                {{#lilactvUser}}
-                <li class="nav-item">
-                    <a class="nav-link" href="/firmware">
-                        <span>펌웨어 다운로드</span>
-                    </a>
-                </li>
-                {{/lilactvUser}}
                 <li class="nav-item dropdown">
                     {{#admin}}
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
