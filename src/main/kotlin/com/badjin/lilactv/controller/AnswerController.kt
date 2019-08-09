@@ -1,20 +1,16 @@
 package com.badjin.lilactv.controller
 
 import com.badjin.lilactv.model.Answers
+import com.badjin.lilactv.model.Result
 import com.badjin.lilactv.model.Users
-import com.badjin.lilactv.repository.AnswerRepo
-import com.badjin.lilactv.repository.QnaRepo
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
-import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
 import javax.servlet.http.HttpSession
 
-@Controller
+@RestController
 @RequestMapping("/qna/{questionId}/answers")
 class AnswerController {
 
@@ -25,10 +21,11 @@ class AnswerController {
     lateinit var serviceModule: LilacTVServices
 
     @PostMapping("")
-    fun create(model: Model, session: HttpSession,
-               @PathVariable questionId: Long,
-               @RequestParam(value = "content") content: String): String {
-        try {
+    fun create(@PathVariable questionId: Long,
+               @RequestParam(value = "content") content: String,
+               session: HttpSession): Answers? {
+        return try {
+            if (content == "") null
             val loginUser = loginSession.getUserFromSession(session) as Users
             val question = serviceModule.findQnaById(questionId)
 
@@ -36,18 +33,17 @@ class AnswerController {
             serviceModule.saveAnswer(Answers(loginUser, question, content))
 
         } catch (e: IllegalStateException) {
-            model["errorMsg"] = e.message!!
-            return "login"
+            null
         }
-        return "redirect:/qna/$questionId"
     }
 
     @DeleteMapping("/{id}")
-    fun deletePost(model: Model, session: HttpSession,
-                   @PathVariable questionId: Long,
-                   @PathVariable id: Long): String {
+    fun deletePost(@PathVariable questionId: Long,
+                   @PathVariable id: Long,
+                   session: HttpSession): Result {
 
-        try {
+        val result = Result(true, 0,null)
+        return try {
             val answerData = serviceModule.findAnswerById(id)
             loginSession.hasPermission(session, answerData!!.replier.id)
             val question = serviceModule.findQnaById(questionId)
@@ -55,10 +51,17 @@ class AnswerController {
             question!!.deleteAnswer()
             serviceModule.deleteAnswerById(id)
 
+            result.count = question.countOfAnswers
+            result
+
         } catch (e: IllegalStateException) {
-            model["errorMsg"] = e.message!!
-            return "login"
+            result.resultFail(e.message!!)
         }
-        return "redirect:/qna/$questionId"
+    }
+
+    @GetMapping("/{id}")
+    fun deleteGet(@PathVariable questionId: Long,
+                  @PathVariable id: Long): String {
+        return "questionShow/$questionId"
     }
 }

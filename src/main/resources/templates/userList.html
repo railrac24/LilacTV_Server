@@ -6,7 +6,7 @@
 
         <script>
             function confirmDelete(id) {
-                if (id == 1) {
+                if (id === 1) {
                     alert("관리자 정보는 삭제할 수 없습니다.");
                 } else if (confirm("선택된 사용자 정보를 삭제 합니다. 계속합니까?")) {
                     // 확인 버튼 클릭 시 동작
@@ -15,7 +15,7 @@
             }
 
             function editUser(id) {
-                if (id == 1) {
+                if (id === 1) {
                     alert("관리자 정보는 수정할 수 없습니다.");
                 } else {
                     window.location="/users/"+id+"/form";

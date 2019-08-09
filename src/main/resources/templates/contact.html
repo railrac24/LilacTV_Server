@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        {{> include/header }}
+
+    </head>
+    <body>
+
+        {{> include/navbar }}
+
+        <div class="container-fluid" align="center">
+            <div class="container" style="margin: 117px 15px 80px;">
+                <div class="col-lg-8 mb-4 text-left">
+                    <h3 align="center">Send me a Message</h3>
+                    <form action="/contact" method="post">
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>Full Name:</label>
+                                <input type="text" class="form-control" name="name" required data-validation-required-message="이름을 입력해 주세요.">
+                                <p class="help-block"></p>
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>Phone Number:</label>
+                                <input type="tel" class="form-control" name="phone" required data-validation-required-message="전화번호를 입력하세요.">
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>Email Address:</label>
+                                <input type="email" class="form-control" name="email" required data-validation-required-message="이메밀 주소를 입력하세요.">
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>Message:</label>
+                                <textarea rows="10" cols="100" class="form-control" name="message" required data-validation-required-message="내용을 입력해 주세요." maxlength="999" style="resize:none"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{ > include/stickyFooter}}
+        {{ > include/footer }}
+
+    </body>
+</html>

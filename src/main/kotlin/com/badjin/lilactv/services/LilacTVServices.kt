@@ -143,8 +143,8 @@ class LilacTVServices {
         return answerDB.getOne(id)
     }
 
-    fun saveAnswer(answers: Answers) {
-        answerDB.save(answers)
+    fun saveAnswer(answers: Answers): Answers {
+        return answerDB.save(answers)
     }
 
     fun deleteAnswerById(id: Long) {

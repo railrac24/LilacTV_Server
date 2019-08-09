@@ -30,14 +30,14 @@ class PasswordController {
 
     @PostMapping("/forgot")
     fun processForgotPasswordForm(model: Model,
-                                  @RequestParam("email") userMail: String,
+                                  @RequestParam("email") userEmail: String,
                                   request: HttpServletRequest): String {
         try {
-            val user = serviceModule.isRegisteredEmail(userMail)
+            val user = serviceModule.isRegisteredEmail(userEmail)
             user.resetToken = UUID.randomUUID().toString()
             serviceModule.saveUser(user)
 
-            val appUrl = request.scheme + "://" + request.serverName + ":8081"
+            val appUrl = request.scheme + "://" + request.serverName
 
             // Email message
             val passwordResetEmail = SimpleMailMessage()
@@ -48,7 +48,7 @@ class PasswordController {
 
             emailService.sendEmail(passwordResetEmail)
             model["colorMsg"] = true
-            model["errorMsg"] = "비밀번호 재설정 링크를 ${userMail}로 전송했습니다."
+            model["errorMsg"] = "비밀번호 재설정 링크를 ${userEmail}로 전송했습니다."
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
             return "login"
