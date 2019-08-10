@@ -3,12 +3,11 @@
 
     <head>
 
-<!--        <div th:replace="fragments/header :: header"></div>-->
         {{> include/header }}
 
     </head>
     <body>
-<!--        <div th:replace="fragments/navbar :: navbar"></div>-->
+
         {{> include/navbar }}
 
         <header class="masthead text-center text-white">
@@ -85,8 +84,6 @@
             </div>
         </section>
 
-<!--        <div th:replace="fragments/stickyFooter :: stickyFooter"></div>-->
-<!--        <div th:replace="fragments/footer :: footer"></div>-->
         {{> include/stickyFooter}}
         {{> include/footer }}
     </body>

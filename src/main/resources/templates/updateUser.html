@@ -27,37 +27,6 @@
                 }
             }
 
-            function getPasswordChecked() {
-                const checkBox = document.getElementById("isPasswordChecked");
-                if (checkBox.checked === true) {
-                    document.getElementById("inputPassword").style.display = "block";
-                    document.getElementById("labelPassword").style.display = "block";
-                    document.getElementById("confirmPassword").style.display = "block";
-                    document.getElementById("labelConfirmPassword").style.display = "block";
-                    document.getElementById('submit').disabled = true;
-                }
-                else {
-                    document.getElementById("inputPassword").style.display = "none";
-                    document.getElementById("labelPassword").style.display = "none";
-                    document.getElementById("confirmPassword").style.display = "none";
-                    document.getElementById("labelConfirmPassword").style.display = "none";
-                    document.getElementById("message").style.display = "none";
-                    document.getElementById('submit').disabled = false;
-                }
-            }
-
-            function check_pass() {
-                if (document.getElementById('inputPassword').value === document.getElementById('confirmPassword').value) {
-                    document.getElementById('message').style.color = 'green';
-                    document.getElementById('message').innerHTML = 'matching';
-                    document.getElementById('submit').disabled = false;
-                } else {
-                    document.getElementById('message').style.color = 'red';
-                    document.getElementById('message').innerHTML = 'not matching';
-                    document.getElementById('submit').disabled = true;
-                }
-            }
-
         </script>
 
         <style>
