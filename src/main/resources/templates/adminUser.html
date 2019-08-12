@@ -55,8 +55,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" style="width: 75px">제품ID</span>
                             </div>
-                            <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
-                                   name="lilactvID" placeholder="제품ID" value="{{lilactvID}}" disabled>
+                            <input type="text" pattern="[a-f0-9]{14}" class="form-control" name="productID" value="{{lilactvID}}">
                         </div>
                         {{#subscription}}
                         <div class="input-group mb-3">
@@ -84,8 +83,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <input type="text" id="Status" class="form-control" name="Status" value="{{status.state}}" disabled>
+                            <input type="text" id="status" class="form-control" name="status_value" value="{{status.state}}">
                         </div>
+<!--                        <input type="hidden" id="valueOfStatus" name="status_value" value="{{status.state}}">-->
                         {{/subscription}}
                         {{/lilactv}}
                         <div class="form-check">
@@ -116,6 +116,13 @@
                 </div>
             </div>
         </div>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script>
+            $('.dropdown-item').click(function() {
+                document.getElementById('status').value = $(this).text();
+            });
+        </script>
 
         {{> include/stickyFooter}}
         {{> include/footer }}

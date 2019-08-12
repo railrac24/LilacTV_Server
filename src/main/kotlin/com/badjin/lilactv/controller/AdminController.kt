@@ -9,6 +9,7 @@ import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
+import java.time.LocalDateTime
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
@@ -104,4 +105,48 @@ class AdminController {
         return "adminUser"
     }
 
+    @PostMapping("/updateUser")
+    fun updateUser(session: HttpSession, model: Model,
+                   @RequestParam(value = "name") name: String,
+                   @RequestParam(value = "email") email: String,
+                   @RequestParam(value = "mobile") mobile: String,
+                   @RequestParam(value = "productID") productID: String,
+                   @RequestParam(value = "status_value") status_value: String,
+                   @RequestParam(value = "pass") password: String): String {
+
+        val id = serviceModule.findUserByEmail(email)?.id
+        try {
+            if (loginSession.hasPermission(session)) {
+                var itemID = productID
+                if (productID != "") {
+                    val subscription = serviceModule.getSubscription(id!!)
+                    if (status_value != subscription.status.state) {
+                        when (status_value) {
+                            "Activated" -> {
+                                subscription.endDate = LocalDateTime.now().plusYears(1)
+                                serviceModule.setSubscription(subscription,id,2L)
+                            }
+                            "Expired" -> {
+                                subscription.endDate = LocalDateTime.now().minusDays(1)
+                                serviceModule.setSubscription(subscription,id,3L)
+                            }
+                            "Wait" -> itemID = ""
+                        }
+                    }
+                }
+                serviceModule.updateUserInfo(Users(name, email, mobile, password), itemID)
+            }
+
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            val (euser, checked, macID) = serviceModule.getSelectedUser4Edit(email)
+            model["lilactv"] = checked == "checked"
+            model["lilactvID"] = macID
+            if (euser != null) {
+                model["user"] = euser
+            }
+            return "adminUser"
+        }
+        return "redirect:/admin/$id/form"
+    }
 }

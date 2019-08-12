@@ -9,6 +9,7 @@ import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
+import java.time.LocalDateTime
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
@@ -102,19 +103,16 @@ class UserController {
     fun update(session: HttpSession, model: Model,
                  @RequestParam(value = "name") name: String,
                  @RequestParam(value = "email") email: String,
-                 @RequestParam(value = "mobile") mobile: String,
-                 @RequestParam(value = "lilactvID") lilactvID: String,
-                 @RequestParam(value = "pass") password: String,
-                 @RequestParam(value = "cpass") cpassword: String
+                 @RequestParam(value = "mobile") mobile: String
                  ): String {
         try {
-            serviceModule.updateUserInfo(Users(name, email, mobile, password), lilactvID)
+            serviceModule.updateUserInfo(Users(name, email, mobile, ""), null)
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
             val (user, checked, productID) = serviceModule.getSelectedUser4Edit(email)
-            model["lilactv"] = checked
-            model["lilactvID"] = productID
+//            model["lilactv"] = checked
+//            model["lilactvID"] = productID
             if (user != null) {
                 model["user"] = user
             }
@@ -191,7 +189,9 @@ class UserController {
             val subscription = serviceModule.getSubscription(user.id!!)
             user.password = ""
             serviceModule.updateUserInfo(user, lilactvID)
-            serviceModule.setSubscription(subscription, user.id!!)
+            subscription.startDate = LocalDateTime.now()
+            subscription.endDate = LocalDateTime.now().plusYears(1)
+            serviceModule.setSubscription(subscription, user.id!!, 2L)
             session.setAttribute("lilactvUser", true)
 
         } catch (e: IllegalStateException) {

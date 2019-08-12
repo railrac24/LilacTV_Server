@@ -124,6 +124,10 @@ class LilacTVServices {
         return (userDB.findByResetToken(resetToken) ?: throw IllegalStateException("잘못된 비밀번호 재설정 링크 입니다."))
     }
 
+    fun findItemByOwner(user: Users): Items? {
+        return (itemDB.findByOwner(user))
+    }
+
     fun saveUser(user: Users) {
         userDB.save(user)
     }
@@ -214,11 +218,11 @@ class LilacTVServices {
         return sub
     }
 
-    fun setSubscription(sub: Subscription, id: Long) {
+    fun setSubscription(sub: Subscription, id: Long, state: Long) {
         sub.lilacTvId = itemDB.findByOwner(findUserById(id)!!)
-        sub.startDate = LocalDateTime.now()
-        sub.endDate = LocalDateTime.now().plusYears(1)
-        sub.status = statusDB.getOne(2L) //activated
+//        sub.startDate = LocalDateTime.now()
+//        sub.endDate = LocalDateTime.now().plusYears(1)
+        sub.status = statusDB.getOne(state) //activated
         subscriptionDB.save(sub)
     }
 
@@ -231,7 +235,7 @@ class LilacTVServices {
             if (unit.owner?.id!! > 1L) {
                 unit.owner = userDB.getOne(1L)
                 itemDB.save(unit)
-                subscriptionDB.deleteByLilacTvId(unit)
+                subscriptionDB.delete(subscriptionDB.findByLilacTvId(unit))
             }
         }
         if (questions != null) qnaDB.deleteAll(questions)
@@ -261,38 +265,41 @@ class LilacTVServices {
         userDB.save(Users(user.name, user.email, user.mobile, cryptoPass))
     }
 
-    fun updateUserInfo(user: Users, lilactvID: String): Boolean {
+    fun updateUserInfo(user: Users, lilactvID: String?): Boolean {
         val cryptoPass = if (user.password.isNotBlank()) util.crypto(user.password) else userDB.findByEmail(user.email)?.password
         if (cryptoPass != null) {
             val modUser = Users(user.name, user.email, user.mobile, cryptoPass)
             modUser.id = userDB.findByEmail(user.email)?.id
 
-            if (lilactvID.isNotBlank()) {
-                val (mac_add, deviceID) = getMacAndID(lilactvID)
-                val unit: Items? = itemDB.findByMacaddeth0(mac_add)
+            if (lilactvID != null) {
+                if (lilactvID.isNotBlank()) {
+                    val (mac_add, deviceID) = getMacAndID(lilactvID)
+                    val unit: Items? = itemDB.findByMacaddeth0(mac_add)
 
-                when {
-                    unit != null -> if (unit.id == deviceID) {
-                        when {
-                            unit.owner?.id == 1L -> {
-                                unit.owner = modUser
-                                itemDB.save(unit)
+                    when {
+                        unit != null -> if (unit.id == deviceID) {
+                            when {
+                                unit.owner?.id == 1L -> {
+                                    unit.owner = modUser
+                                    itemDB.save(unit)
+                                }
+                                unit.owner?.id == modUser.id -> userDB.save(modUser)
+                                else -> throw IllegalStateException("이미 등록된 제품ID 입니다.")
                             }
-                            unit.owner?.id == modUser.id -> userDB.save(modUser)
-                            else -> throw IllegalStateException("이미 등록된 제품ID 입니다.")
-                        }
-                    } else throw IllegalStateException("잘못된 제품ID 입니다.")
-                    else -> throw IllegalStateException("잘못된 제품ID 입니다.")
-                }
-            } else {
-                val unit = userDB.findByEmail(user.email)?.let { itemDB.findByOwner(it) }
-                if (unit != null) {
-                    if (unit.owner?.id!! > 1L) {
-                        unit.owner = userDB.getOne(1L)
-                        itemDB.save(unit)
+                        } else throw IllegalStateException("잘못된 제품ID 입니다.")
+                        else -> throw IllegalStateException("잘못된 제품ID 입니다.")
                     }
+                } else {
+                    val unit = userDB.findByEmail(user.email)?.let { itemDB.findByOwner(it) }
+                    if (unit != null) {
+                        if (unit.owner?.id!! > 1L) {
+                            unit.owner = userDB.getOne(1L)
+                            itemDB.save(unit)
+                            subscriptionDB.delete(subscriptionDB.findByLilacTvId(unit))
+                        }
+                    }
+                    userDB.save(modUser)
                 }
-                userDB.save(modUser)
             }
         }
         return true

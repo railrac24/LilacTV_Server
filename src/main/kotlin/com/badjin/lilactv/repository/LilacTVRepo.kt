@@ -30,5 +30,4 @@ interface StatusRepo: JpaRepository<Status, Long> {
 
 interface SubscriptionRepo: JpaRepository<Subscription, Long> {
     fun findByLilacTvId(item: Items): Subscription
-    fun deleteByLilacTvId(item: Items)
 }
