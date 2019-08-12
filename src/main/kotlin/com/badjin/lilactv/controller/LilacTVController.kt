@@ -29,17 +29,6 @@ class LilacTVController {
     fun qnaPage(): String {
         return "qnaList"
     }
-
-    @GetMapping("/firmware")
-    fun firmwarePage(model: Model, session: HttpSession): String {
-        try {
-            loginSession.hasLilacTV(session)
-        } catch (e: IllegalStateException) {
-            model["errorMsg"] = e.message!!
-            return "login"
-        }
-        return "firmware"
-    }
 }
 
 

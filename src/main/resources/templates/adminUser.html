@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        {{> include/header }}
+
+        <style>
+            #bj {
+                padding-top: 100px;
+                margin-bottom: 80px;
+            }
+        </style>
+
+    </head>
+    <body>
+
+        {{> include/navbar }}
+
+        <div id="bj" class="container">
+            <div class="card card-register mx-auto mt-5" style="width: 30rem;">
+                {{#user}}
+                {{#errorMsg}}
+                <div class="card-header" style="background: #cc6b80; color: #ffffff">{{errorMsg}}</div>
+                {{/errorMsg}}
+                {{^errorMsg}}
+                <div class="card-header">개인정보 관리</div>
+                {{/errorMsg}}
+                <div class="card-body">
+                    <form action="/admin/updateUser" method="post">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="namebar" style="width: 75px">Name</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="name" placeholder="이름" required="required" autofocus="autofocus" value="{{name}}">
+                        </div>
+                        <input type="hidden" name="email" value="{{email}}">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="emailbar" style="width: 75px">Email</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="email" placeholder="이메일" required="required" value="{{email}}" disabled>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="phonebar" style="width: 75px">Mobile</span>
+                            </div>
+                            <input type="tel" pattern="[0-9]{4}[0-9]{3}[0-9]{3}" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="mobile" placeholder="핸드폰" required="required" value="{{mobile}}">
+                        </div>
+                        {{/user}}
+                        {{#lilactv}}
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="width: 75px">제품ID</span>
+                            </div>
+                            <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                                   name="lilactvID" placeholder="제품ID" value="{{lilactvID}}" disabled>
+                        </div>
+                        {{#subscription}}
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="width: 75px">시작일</span>
+                            </div>
+                            <input type="text" id="startDate" class="form-control" name="startDate" value="{{startDate}}" disabled>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="width: 75px">종료일</span>
+                            </div>
+                            <input type="text" id="endDate" class="form-control" name="endDate" value="{{endDate}}" disabled>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Status
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">Activated</a>
+                                        <a class="dropdown-item" href="#">Expired</a>
+                                        <a class="dropdown-item" href="#">Wait</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="text" id="Status" class="form-control" name="Status" value="{{status.state}}" disabled>
+                        </div>
+                        {{/subscription}}
+                        {{/lilactv}}
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isPasswordChecked" onclick="getPasswordChecked()">
+                            <label class="form-check-label" for="isPasswordChecked">비밀번호를 변경합니다.</label>
+                        </div>
+                        {{#user}}
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input type="password" id="inputPassword" name="pass" class="form-control" style="display: none">
+                                        <label id="labelPassword" for="inputPassword" style="display: none">Password</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input type="password" id="confirmPassword" name="cpass" class="form-control" style="display: none" onfocusout='check_pass()'>
+                                        <label id="labelConfirmPassword" for="confirmPassword" style="display: none" >Confirm password</label>
+                                        <span id='message'></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="submit" >Update</button>
+                        {{/user}}
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{> include/stickyFooter}}
+        {{> include/footer }}
+
+    </body>
+</html>

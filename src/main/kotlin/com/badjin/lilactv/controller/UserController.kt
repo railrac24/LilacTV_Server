@@ -60,14 +60,13 @@ class UserController {
                  @RequestParam(value = "name") name: String,
                  @RequestParam(value = "email") email: String,
                  @RequestParam(value = "mobile") mobile: String,
-                 @RequestParam(value = "lilactvID") lilactvID: String,
                  @RequestParam(value = "pass") password: String,
                  @RequestParam(value = "cpass") cpassword: String
                  ): String {
 
         val user = Users(name, email, mobile, cpassword)
         try {
-            serviceModule.registerProcess(user, lilactvID)
+            serviceModule.registerProcess(user)
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
             return "register"
@@ -76,7 +75,7 @@ class UserController {
     }
 
     @GetMapping("/{id}/form")
-    fun updateUserData(model: Model, session: HttpSession, response: HttpServletResponse, @PathVariable id: Long): String {
+    fun updateUserData(model: Model, session: HttpSession, @PathVariable id: Long): String {
 
         try {
             if (loginSession.hasPermission(session,id)) {
@@ -121,6 +120,98 @@ class UserController {
             }
             return "updateUser"
         }
-        return if (session.getAttribute("admin") as Boolean) "redirect:/admin/userList" else "redirect:/index"
+        return "redirect:/index"
+    }
+
+    @GetMapping("/{id}/resetPassword")
+    fun resetPasswordPage(model: Model,
+                          session: HttpSession,
+                          @PathVariable id: Long): String {
+
+        try {
+            loginSession.hasPermission(session,id)
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "login"
+        }
+
+        return "reset-password"
+    }
+
+    @PostMapping("/resetPassword")
+    fun setNewPassword(model: Model,
+                       session: HttpSession,
+                       @RequestParam(value = "pass") password: String): String {
+
+        try {
+            val user = loginSession.getUserFromSession(session) as Users
+            user.password = serviceModule.util.crypto(password)
+            serviceModule.saveUser(user)
+            model["colorMsg"] = true
+            model["errorMsg"] = "비밀번호를 성공적으로 변경했습니다."
+
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "login"
+        }
+        return "login"
+    }
+
+    @GetMapping("/{id}/activate")
+    fun showLilacTVStatus(model: Model,
+                          session: HttpSession,
+                          @PathVariable id: Long): String {
+
+        try {
+            if (loginSession.hasPermission(session,id)) {
+                val loginUser = loginSession.getUserFromSession(session) as Users
+                val subscription = serviceModule.getSubscription(id)
+                if (subscription.status.state != "Wait") {
+                    val (user, checked, productID) = serviceModule.getSelectedUser4Edit(id)
+                    model["lilactvID"] = productID
+                }
+                model["subscription"] = subscription
+                model["username"] = loginUser.name
+            }
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "login"
+        }
+
+        return "activateLilacTV"
+    }
+
+    @PostMapping("/activate")
+    fun activateLilacTV(model: Model,
+                        session: HttpSession,
+                        @RequestParam(value = "lilactvID") lilactvID: String): String {
+
+        val user = loginSession.getUserFromSession(session) as Users
+        try {
+            val subscription = serviceModule.getSubscription(user.id!!)
+            user.password = ""
+            serviceModule.updateUserInfo(user, lilactvID)
+            serviceModule.setSubscription(subscription, user.id!!)
+            session.setAttribute("lilactvUser", true)
+
+        } catch (e: IllegalStateException) {
+
+            model["errorMsg"] = e.message!!
+            return "activateLilacTV"
+
+        }
+        return "redirect:/users/${user.id}/activate"
+    }
+
+    @GetMapping("/firmware")
+    fun firmwarePage(model: Model,
+                     session: HttpSession): String {
+        try {
+            loginSession.hasLilacTV(session)
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            return "login"
+        }
+        return "firmware"
     }
 }

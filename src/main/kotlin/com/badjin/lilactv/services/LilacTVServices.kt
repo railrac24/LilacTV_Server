@@ -1,19 +1,14 @@
 package com.badjin.lilactv.services
 
-import com.badjin.lilactv.model.Answers
-import com.badjin.lilactv.repository.ItemRepo
-import com.badjin.lilactv.model.Items
-import com.badjin.lilactv.model.Questions
-import com.badjin.lilactv.repository.UserRepo
-import com.badjin.lilactv.model.Users
-import com.badjin.lilactv.repository.AnswerRepo
-import com.badjin.lilactv.repository.QnaRepo
+import com.badjin.lilactv.model.*
+import com.badjin.lilactv.repository.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.*
 import javax.servlet.http.HttpSession
 import kotlin.math.min
@@ -32,6 +27,12 @@ class LilacTVServices {
 
     @Autowired
     lateinit var answerDB: AnswerRepo
+
+    @Autowired
+    lateinit var subscriptionDB: SubscriptionRepo
+
+    @Autowired
+    lateinit var statusDB: StatusRepo
 
     @Autowired
     lateinit var util: Utils
@@ -179,6 +180,48 @@ class LilacTVServices {
         return Triple(user, checked, macID)
     }
 
+    fun checkStatus(sub: Subscription) {
+        when (sub.status.state) {
+            "Activated" -> {
+                if (LocalDateTime.now().isAfter(sub.endDate)) {
+                    sub.status = statusDB.getOne(3L)
+                    subscriptionDB.save(sub)
+                }
+            }
+            "Expired" -> {
+                if (LocalDateTime.now().isBefore(sub.endDate)) {
+                    sub.status = statusDB.getOne(2L)
+                    subscriptionDB.save(sub)
+                }
+            }
+        }
+    }
+
+    fun getSubscription(id: Long): Subscription {
+        val sub: Subscription
+        val lilactvID = itemDB.findByOwner(findUserById(id)!!)
+        if (lilactvID != null) {
+            sub = subscriptionDB.findByLilacTvId(lilactvID)
+            checkStatus(sub)
+        } else {
+            sub = Subscription(
+                    null,
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    statusDB.getOne(1L) //wait
+            )
+        }
+        return sub
+    }
+
+    fun setSubscription(sub: Subscription, id: Long) {
+        sub.lilacTvId = itemDB.findByOwner(findUserById(id)!!)
+        sub.startDate = LocalDateTime.now()
+        sub.endDate = LocalDateTime.now().plusYears(1)
+        sub.status = statusDB.getOne(2L) //activated
+        subscriptionDB.save(sub)
+    }
+
     fun deleteSelectedUser(id: Long) {
         val user = userDB.getOne(id)
         val unit = itemDB.findByOwner(user)
@@ -188,6 +231,7 @@ class LilacTVServices {
             if (unit.owner?.id!! > 1L) {
                 unit.owner = userDB.getOne(1L)
                 itemDB.save(unit)
+                subscriptionDB.deleteByLilacTvId(unit)
             }
         }
         if (questions != null) qnaDB.deleteAll(questions)
@@ -208,19 +252,13 @@ class LilacTVServices {
         } else throw IllegalStateException("비밀번호가 일치하지 않습니다.")
     }
 
-    fun registerProcess(user: Users, lilactvID: String) {
+    fun registerProcess(user: Users) {
 
         if (userDB.findByEmail(user.email) != null) throw IllegalStateException("이미 등록된 이메일 주소 입니다.")
 
         val cryptoPass = util.crypto(user.password)
 
-        if (lilactvID != "") {
-            when (updateItemInfo(Users(user.name, user.email, user.mobile, cryptoPass), lilactvID)) {
-                1 -> throw IllegalStateException("이미 등록된 제품ID 입니다.")
-                2 -> throw IllegalStateException("잘못된 제품ID 입니다.")
-            }
-        } else
-            userDB.save(Users(user.name, user.email, user.mobile, cryptoPass))
+        userDB.save(Users(user.name, user.email, user.mobile, cryptoPass))
     }
 
     fun updateUserInfo(user: Users, lilactvID: String): Boolean {

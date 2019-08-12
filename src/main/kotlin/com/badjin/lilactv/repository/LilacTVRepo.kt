@@ -23,3 +23,12 @@ interface QnaRepo: JpaRepository<Questions, Long> {
 interface AnswerRepo: JpaRepository<Answers, Long> {
     fun findAllByReplier(replier: Users): MutableList<Answers>?
 }
+
+interface StatusRepo: JpaRepository<Status, Long> {
+
+}
+
+interface SubscriptionRepo: JpaRepository<Subscription, Long> {
+    fun findByLilacTvId(item: Items): Subscription
+    fun deleteByLilacTvId(item: Items)
+}

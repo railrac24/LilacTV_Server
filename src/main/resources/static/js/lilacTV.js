@@ -89,6 +89,6 @@ function editUser(id) {
     if (id === 1) {
         alert("관리자 정보는 수정할 수 없습니다.");
     } else {
-        window.location="/users/"+id+"/form";
+        window.location="/admin/"+id+"/form";
     }
 }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        {{> include/header }}
+
+        <style>
+            #bj {
+                padding-top: 100px;
+                margin-bottom: 20px;
+            }
+        </style>
+
+    </head>
+    <body>
+
+        {{> include/navbar }}
+
+        <div id="bj" class="container">
+            <div class="card card-register mx-auto mt-5" style="width: 30rem;">
+                {{#errorMsg}}
+                <div class="card-header" style="background: #cc6b80; color: #ffffff">{{errorMsg}}</div>
+                {{/errorMsg}}
+                {{^errorMsg}}
+                <div class="card-header">{{username}}님의 라일락TV</div>
+                {{/errorMsg}}
+                <div class="card-body">
+                    {{^lilactvID}}
+                    <form action="/users/activate" method="post">
+                        <span style="font-size: 12px; margin-bottom: 10px">라일락TV의 [설정]메뉴 > 서브메뉴(왼쪽메뉴) > [제품정보]에서 확인가능</span>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" pattern="[a-f0-9]{14}" id="productID" class="form-control" name="lilactvID" autofocus="autofocus" required>
+                                <label for="productID">제품ID</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Activation</button>
+                    </form>
+                    {{/lilactvID}}
+                    {{#lilactvID}}
+                    {{#subscription}}
+                    <form>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" class="form-control" id="productID1" value="{{lilactvID}}" disabled>
+                                <label for="productID1">ID</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" class="form-control" id="startDate" value="{{startDate}}" disabled>
+                                <label for="startDate">시작일</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" class="form-control" id="endDate" value="{{endDate}}" disabled>
+                                <label for="endDate">종료일</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" style="color: #005cbfupdateUser.html" class="form-control" id="state" value="{{status.state}}" disabled>
+                                <label for="state">status</label>
+                            </div>
+                        </div>
+                    </form>
+                    {{/subscription}}
+                    {{/lilactvID}}
+                </div>
+            </div>
+        </div>
+
+        {{> include/stickyFooter}}
+        {{> include/footer }}
+
+    </body>
+</html>
