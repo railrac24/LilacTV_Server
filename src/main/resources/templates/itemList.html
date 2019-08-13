@@ -4,6 +4,16 @@
 
         {{> include/header }}
 
+        <script>
+            function selectedUser(id) {
+                if (id === 1) {
+                    alert("관리자 정보는 수정할 수 없습니다.");
+                } else {
+                    window.location="/admin/"+id+"/form";
+                }
+            }
+        </script>
+
     </head>
     <body>
 
@@ -61,14 +71,14 @@
                     {{/units}}
                     {{#subscriptions}}
                     <tbody>
-                        <tr>
+                        <tr class="clickable-row" style="cursor: pointer" onclick="selectedUser({{lilacTvId.owner.id}})">
                             <td>{{id}}</td>
                             <td>{{lilacTvId.owner.name}}</td>
                             <td>{{lilacTvId.macaddeth0}}</td>
                             <td>{{endDate}}</td>
                             <td>{{status.state}}</td>
                             <td>{{lilacTvId.online}}</td>
-                    </tr>
+                        </tr>
                     </tbody>
                     {{/subscriptions}}
 
