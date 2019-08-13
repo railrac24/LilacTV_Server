@@ -75,29 +75,22 @@ class LilacTVServices {
         return 0
     }
 
-    fun getDevicesList(sortMode: Boolean): MutableList<Items>? {
+    fun getDevicesList(sortMode: Int): MutableList<Items>? {
         var units: MutableList<Items>?
-//        val system =  if (SystemUtils.IS_OS_WINDOWS) "-n" else "-c"
 
-        if (sortMode) {
-            units = itemDB.findAll()
+        when (sortMode) {
+            1 -> units = itemDB.findAll()
+            2 -> {
+                units = itemDB.findAllByOnline(true)
+                if (units == null) units = itemDB.findAll()
+            }
+            else -> units = itemDB.findAll()
         }
-        else {
-            units = itemDB.findAllByOnline(true)
-            if (units == null) units = itemDB.findAll()
-//            else {
-//                for (i  in units.indices) {
-//                    if (!(util.pingTest(units[i].ipadd, system))){
-//                        units[i].online = false
-//                        itemDB.save(units[i])
-//                    }
-//                }
-//                units = itemDB.findAllByOnline(true)
-//                if (units == null) units = itemDB.findAll()
-//            }
-        }
-
         return util.setIndex(units)
+    }
+
+    fun getAllSubscriptions(): MutableList<Subscription> {
+        return subscriptionDB.findAll()
     }
 
     fun getUserList(): MutableList<Users>? {
@@ -185,18 +178,10 @@ class LilacTVServices {
     }
 
     fun checkStatus(sub: Subscription) {
-        when (sub.status.state) {
-            "Activated" -> {
-                if (LocalDateTime.now().isAfter(sub.endDate)) {
-                    sub.status = statusDB.getOne(3L)
-                    subscriptionDB.save(sub)
-                }
-            }
-            "Expired" -> {
-                if (LocalDateTime.now().isBefore(sub.endDate)) {
-                    sub.status = statusDB.getOne(2L)
-                    subscriptionDB.save(sub)
-                }
+        if (sub.status.state == "Activated") {
+            if (LocalDateTime.now().isAfter(sub.endDate)) {
+                sub.status = statusDB.getOne(3L)
+                subscriptionDB.save(sub)
             }
         }
     }
@@ -300,7 +285,7 @@ class LilacTVServices {
                     }
                     userDB.save(modUser)
                 }
-            }
+            } else userDB.save(modUser)
         }
         return true
     }

@@ -3,6 +3,7 @@ package com.badjin.lilactv.controller
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
+import org.omg.CORBA.INTERNAL
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -17,7 +18,10 @@ import javax.servlet.http.HttpSession
 @RequestMapping("/admin")
 class AdminController {
 
-    private var listAllFlag: Boolean = true
+    private val allLIST: Int = 1
+    private val onlineLIST: Int = 2
+    private val ownerLIST: Int = 3
+    private var listAllFlag: Int = allLIST
 
     @Autowired
     lateinit var serviceModule: LilacTVServices
@@ -58,7 +62,13 @@ class AdminController {
     fun items(model: Model, session: HttpSession): String {
         try {
             if (loginSession.hasPermission(session)) {
-                model["units"] = serviceModule.getDevicesList(listAllFlag)!!
+                model["all"] = true
+                if (listAllFlag == ownerLIST) {
+                    model["all"] = false
+                    model["subscriptions"] = serviceModule.getAllSubscriptions()
+                }
+                else
+                    model["units"] = serviceModule.getDevicesList(listAllFlag)!!
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -73,7 +83,7 @@ class AdminController {
                @RequestParam(name = "ListMode") sortMode: String): String {
         try {
             if (loginSession.hasPermission(session)) {
-                listAllFlag = sortMode == "all"
+                listAllFlag = sortMode.toInt()
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -107,6 +117,30 @@ class AdminController {
 
     @PostMapping("/updateUser")
     fun updateUser(session: HttpSession, model: Model,
+                              @RequestParam(value = "name") name: String,
+                              @RequestParam(value = "email") email: String,
+                              @RequestParam(value = "mobile") mobile: String,
+                              @RequestParam(value = "pass") password: String): String {
+
+        val id = serviceModule.findUserByEmail(email)?.id
+        try {
+            if (loginSession.hasPermission(session)) {
+                serviceModule.updateUserInfo(Users(name, email, mobile, password), null)
+            }
+        } catch (e: IllegalStateException) {
+            model["errorMsg"] = e.message!!
+            val (user, checked, macID) = serviceModule.getSelectedUser4Edit(email)
+            if (user != null) {
+                model["user"] = user
+            }
+            return "adminUser"
+        }
+        return "redirect:/admin/$id/form"
+
+    }
+
+    @PostMapping("/updateUserWithLilacTV")
+    fun updateUserWithLilacTV(session: HttpSession, model: Model,
                    @RequestParam(value = "name") name: String,
                    @RequestParam(value = "email") email: String,
                    @RequestParam(value = "mobile") mobile: String,
@@ -123,7 +157,7 @@ class AdminController {
                     if (status_value != subscription.status.state) {
                         when (status_value) {
                             "Activated" -> {
-                                subscription.endDate = LocalDateTime.now().plusYears(1)
+                                subscription.endDate = LocalDateTime.now().plusDays(1)
                                 serviceModule.setSubscription(subscription,id,2L)
                             }
                             "Expired" -> {

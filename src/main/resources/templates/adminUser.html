@@ -26,7 +26,12 @@
                 <div class="card-header">개인정보 관리</div>
                 {{/errorMsg}}
                 <div class="card-body">
+                    {{#lilactv}}
+                    <form action="/admin/updateUserWithLilacTV" method="post">
+                    {{/lilactv}}
+                    {{^lilactv}}
                     <form action="/admin/updateUser" method="post">
+                    {{/lilactv}}
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="namebar" style="width: 75px">Name</span>

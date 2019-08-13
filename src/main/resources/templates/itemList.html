@@ -14,34 +14,64 @@
                 <form id="updateList" action="/admin/update" method="post">
                     <div class="btn-group btn-group-toggle" data-toggle="buttons" style="margin-bottom: 14px">
                         <label class="btn btn-secondary">
-                            <input type="radio" name="ListMode" id="option1" value="all" onchange="submitForm()"> All List
+                            <input type="radio" name="ListMode" id="option1" value="1" onchange="submitForm()"> All List
                         </label>
                         <label class="btn btn-secondary">
-                            <input type="radio" name="ListMode" id="option2" value="online" onchange="submitForm()"> Online
+                            <input type="radio" name="ListMode" id="option2" value="2" onchange="submitForm()"> Online
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="ListMode" id="option3" value="3" onchange="submitForm()"> Owner
                         </label>
                     </div>
                 </form>
                 <table class="table table-hover">
+                    {{#all}}
                     <thead>
-                    <tr>
-                        <th scope="col">Index</th>
-                        <th scope="col">Owner</th>
-                        <th scope="col">Mac Address</th>
-                        <th scope="col">IP Address</th>
-                        <th scope="col">Online</th>
-                    </tr>
+                        <tr>
+                            <th scope="col">Index</th>
+                            <th scope="col">Owner</th>
+                            <th scope="col">Mac Address</th>
+                            <th scope="col">IP Address</th>
+                            <th scope="col">Online</th>
+                        </tr>
                     </thead>
-                    <tbody>
+                    {{/all}}
+                    {{^all}}
+                    <thead>
+                        <tr>
+                            <th scope="col">Index</th>
+                            <th scope="col">Owner</th>
+                            <th scope="col">Mac Address</th>
+                            <th scope="col">Expiry Date</th>
+                            <th scope="col">Activation</th>
+                            <th scope="col">Online</th>
+                        </tr>
+                    </thead>
+                    {{/all}}
                     {{#units}}
-                    <tr>
-                        <td>{{seqindex}}</td>
-                        <td>{{owner.name}}</td>
-                        <td>{{macaddeth0}}</td>
-                        <td>{{ipadd}}</td>
-                        <td>{{online}}</td>
-                    </tr>
-                    {{/units}}
+                    <tbody>
+                        <tr>
+                            <td>{{seqindex}}</td>
+                            <td>{{owner.name}}</td>
+                            <td>{{macaddeth0}}</td>
+                            <td>{{ipadd}}</td>
+                            <td>{{online}}</td>
+                        </tr>
                     </tbody>
+                    {{/units}}
+                    {{#subscriptions}}
+                    <tbody>
+                        <tr>
+                            <td>{{id}}</td>
+                            <td>{{lilacTvId.owner.name}}</td>
+                            <td>{{lilacTvId.macaddeth0}}</td>
+                            <td>{{endDate}}</td>
+                            <td>{{status.state}}</td>
+                            <td>{{lilacTvId.online}}</td>
+                    </tr>
+                    </tbody>
+                    {{/subscriptions}}
+
                 </table>
             </div>
         </div>

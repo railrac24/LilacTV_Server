@@ -5,7 +5,7 @@ import javax.persistence.*
 
 @Entity
 data class Subscription (
-        @ManyToOne(cascade = [CascadeType.MERGE])
+        @OneToOne(cascade = [CascadeType.MERGE])
         @JoinColumn(name = "lilac_tv_id")
         var lilacTvId: Items?,
         var startDate: LocalDateTime,

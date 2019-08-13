@@ -8,6 +8,7 @@ interface ItemRepo: JpaRepository<Items, Long> {
     fun findAllByOnline(online: Boolean): MutableList<Items>?
     fun findByMacaddeth0(macaddeth0: String): Items?
     fun findByOwner(owner: Users): Items?
+    fun findAllByOwnerIsNot(owner: Users): MutableList<Items>
 }
 
 interface UserRepo: JpaRepository<Users, Long> {
