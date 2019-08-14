@@ -15,5 +15,8 @@ class WebConfig : WebMvcConfigurer {
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/").setCachePeriod(20)
         registry.addResourceHandler("/vendor/**").addResourceLocations("classpath:/static/vendor/").setCachePeriod(20)
     }
+
+//    @Value("${lilactv.resource.period}")
+//    val test: Long? = null
 }
 

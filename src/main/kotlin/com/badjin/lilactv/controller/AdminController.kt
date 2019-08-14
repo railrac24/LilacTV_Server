@@ -1,9 +1,9 @@
 package com.badjin.lilactv.controller
 
+import com.badjin.lilactv.*
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
-import org.omg.CORBA.INTERNAL
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -11,17 +11,13 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
 import java.lang.IllegalStateException
 import java.time.LocalDateTime
-import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
 @Controller
 @RequestMapping("/admin")
 class AdminController {
 
-    private val allLIST: Int = 1
-    private val onlineLIST: Int = 2
-    private val ownerLIST: Int = 3
-    private var listAllFlag: Int = allLIST
+    private var listAllFlag = ALL_LIST
 
     @Autowired
     lateinit var serviceModule: LilacTVServices
@@ -52,7 +48,7 @@ class AdminController {
             model["errorMsg"] = e.message!!
             return "login"
         }
-        if (id == 1L) {
+        if (id == ADMIN) {
             return "redirect:/admin/userList"
         }
         return "redirect:/admin/userList"
@@ -63,7 +59,7 @@ class AdminController {
         try {
             if (loginSession.hasPermission(session)) {
                 model["all"] = true
-                if (listAllFlag == ownerLIST) {
+                if (listAllFlag == OWNER_LIST) {
                     model["all"] = false
                     model["subscriptions"] = serviceModule.getAllSubscriptions()
                 }
@@ -157,12 +153,12 @@ class AdminController {
                     if (status_value != subscription.status.state) {
                         when (status_value) {
                             "Activated" -> {
-                                subscription.endDate = LocalDateTime.now().plusDays(1)
-                                serviceModule.setSubscription(subscription,id,2L)
+                                subscription.endDate = LocalDateTime.now().plusDays(ACTIVATE_PERIOD)
+                                serviceModule.setSubscription(subscription,id, ACTIVATED)
                             }
                             "Expired" -> {
                                 subscription.endDate = LocalDateTime.now().minusDays(1)
-                                serviceModule.setSubscription(subscription,id,3L)
+                                serviceModule.setSubscription(subscription,id, EXPIRED)
                             }
                             "Wait" -> itemID = ""
                         }

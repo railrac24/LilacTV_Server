@@ -1,5 +1,7 @@
 package com.badjin.lilactv.controller
 
+import com.badjin.lilactv.TOTAL_LIST_SIZE
+import com.badjin.lilactv.TOTAL_PAGE_SIZE
 import com.badjin.lilactv.model.Questions
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.services.HttpSessionUtils
@@ -32,7 +34,7 @@ class QnaController {
                  @PathVariable size: Optional<Int>): String {
 
         val currentPage = page.orElse(1)
-        val pageSize = size.orElse(serviceModule.pageListSize)
+        val pageSize = size.orElse(TOTAL_LIST_SIZE)
         val qna = serviceModule.findPaginated(PageRequest(currentPage - 1, pageSize))
 
         model["qna"] = qna
@@ -43,7 +45,7 @@ class QnaController {
             val myPage = serviceModule.getMyPage(qna.totalPages, currentPage - 1)
             model["pageNumbers"] = myPage
 
-            if ((currentPage-1)/serviceModule.pageTagSize == 0) model["firstPage"] = true
+            if ((currentPage-1)/TOTAL_PAGE_SIZE == 0) model["firstPage"] = true
 
             if (currentPage == 1) model["previousPage"] = true
             else model["previousPageNo"] = (currentPage-1).toString()
@@ -51,7 +53,7 @@ class QnaController {
             if (currentPage == totalPages) model["nextPage"] = true
             else model["nextPageNo"] = (currentPage+1).toString()
 
-            if ((currentPage-1)/serviceModule.pageTagSize == (totalPages-1)/serviceModule.pageTagSize) model["lastPage"] = true
+            if ((currentPage-1)/TOTAL_PAGE_SIZE == (totalPages-1)/TOTAL_PAGE_SIZE) model["lastPage"] = true
             else model["lastPageNo"] = totalPages.toString()
         } else {
             model["firstPage"] = true
@@ -98,7 +100,7 @@ class QnaController {
             model["errorMsg"] = e.message!!
             return "login"
         }
-        return "redirect:/qna/qnaList/1/${serviceModule.pageListSize}"
+        return "redirect:/qna/qnaList/1/$TOTAL_LIST_SIZE"
     }
 
     @GetMapping("/{id}/form")
@@ -149,6 +151,6 @@ class QnaController {
             model["errorMsg"] = e.message!!
             return "login"
         }
-        return "redirect:/qna/qnaList/$cuPage/${serviceModule.pageListSize}"
+        return "redirect:/qna/qnaList/$cuPage/$TOTAL_LIST_SIZE"
     }
 }

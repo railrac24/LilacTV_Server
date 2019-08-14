@@ -1,5 +1,6 @@
 package com.badjin.lilactv.services
 
+import com.badjin.lilactv.*
 import com.badjin.lilactv.model.*
 import com.badjin.lilactv.repository.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -59,28 +60,28 @@ class LilacTVServices {
         return macID+unitID
     }
 
-    fun updateItemInfo(user: Users, lilactvID: String): Int {
-        val (mac_add, deviceID) = getMacAndID(lilactvID)
-        val unit: Items? = itemDB.findByMacaddeth0(mac_add)
-
-        when {
-            unit != null -> if (unit.id == deviceID) {
-                if (unit.owner?.id == 1L ) {
-                    unit.owner = user
-                    itemDB.save(unit)
-                } else return 1
-            } else return 2
-            else -> return 1
-        }
-        return 0
-    }
+//    fun updateItemInfo(user: Users, lilactvID: String): Int {
+//        val (mac_add, deviceID) = getMacAndID(lilactvID)
+//        val unit: Items? = itemDB.findByMacaddeth0(mac_add)
+//
+//        when {
+//            unit != null -> if (unit.id == deviceID) {
+//                if (unit.owner?.id == 1L ) {
+//                    unit.owner = user
+//                    itemDB.save(unit)
+//                } else return 1
+//            } else return 2
+//            else -> return 1
+//        }
+//        return 0
+//    }
 
     fun getDevicesList(sortMode: Int): MutableList<Items>? {
         var units: MutableList<Items>?
 
         when (sortMode) {
-            1 -> units = itemDB.findAll()
-            2 -> {
+            ALL_LIST -> units = itemDB.findAll()
+            ONLINE_LIST -> {
                 units = itemDB.findAllByOnline(true)
                 if (units == null) units = itemDB.findAll()
             }
@@ -155,7 +156,7 @@ class LilacTVServices {
         val user = userDB.getOne(id)
         val unit = itemDB.findByOwner(user)
         if (unit != null) {
-            if (unit.owner?.id!! > 1L) {
+            if (unit.owner?.id!! > ADMIN) {
                 checked = "checked"
                 macID = getProductTVID(unit.macaddeth0, unit.id)
             }
@@ -169,7 +170,7 @@ class LilacTVServices {
         val user = userDB.findByEmail(email)
         val unit = user?.let { itemDB.findByOwner(it) }
         if (unit != null) {
-            if (unit.owner?.id!! > 1L) {
+            if (unit.owner?.id!! > ADMIN) {
                 checked = "checked"
                 macID = getProductTVID(unit.macaddeth0, unit.id)
             }
@@ -180,7 +181,7 @@ class LilacTVServices {
     fun checkStatus(sub: Subscription) {
         if (sub.status.state == "Activated") {
             if (LocalDateTime.now().isAfter(sub.endDate)) {
-                sub.status = statusDB.getOne(3L)
+                sub.status = statusDB.getOne(EXPIRED)
                 subscriptionDB.save(sub)
             }
         }
@@ -197,7 +198,7 @@ class LilacTVServices {
                     null,
                     LocalDateTime.now(),
                     LocalDateTime.now(),
-                    statusDB.getOne(1L) //wait
+                    statusDB.getOne(WAIT)
             )
         }
         return sub
@@ -205,9 +206,7 @@ class LilacTVServices {
 
     fun setSubscription(sub: Subscription, id: Long, state: Long) {
         sub.lilacTvId = itemDB.findByOwner(findUserById(id)!!)
-//        sub.startDate = LocalDateTime.now()
-//        sub.endDate = LocalDateTime.now().plusYears(1)
-        sub.status = statusDB.getOne(state) //activated
+        sub.status = statusDB.getOne(state)
         subscriptionDB.save(sub)
     }
 
@@ -217,8 +216,8 @@ class LilacTVServices {
         val questions = qnaDB.findAllByWriter(user)
         val answers = answerDB.findAllByReplier(user)
         if (unit != null) {
-            if (unit.owner?.id!! > 1L) {
-                unit.owner = userDB.getOne(1L)
+            if (unit.owner?.id!! > ADMIN) {
+                unit.owner = userDB.getOne(ADMIN)
                 itemDB.save(unit)
                 subscriptionDB.delete(subscriptionDB.findByLilacTvId(unit))
             }
@@ -264,7 +263,7 @@ class LilacTVServices {
                     when {
                         unit != null -> if (unit.id == deviceID) {
                             when {
-                                unit.owner?.id == 1L -> {
+                                unit.owner?.id == ADMIN -> {
                                     unit.owner = modUser
                                     itemDB.save(unit)
                                 }
@@ -277,8 +276,8 @@ class LilacTVServices {
                 } else {
                     val unit = userDB.findByEmail(user.email)?.let { itemDB.findByOwner(it) }
                     if (unit != null) {
-                        if (unit.owner?.id!! > 1L) {
-                            unit.owner = userDB.getOne(1L)
+                        if (unit.owner?.id!! > ADMIN) {
+                            unit.owner = userDB.getOne(ADMIN)
                             itemDB.save(unit)
                             subscriptionDB.delete(subscriptionDB.findByLilacTvId(unit))
                         }
@@ -292,14 +291,11 @@ class LilacTVServices {
 
     data class MyPage(val active: Boolean, val page: String)
 
-    val pageTagSize = 10
-    val pageListSize = 8
-
     fun getMyPage(size: Int, currentPage: Int): ArrayList<MyPage> {
         val myPage = arrayListOf<MyPage>()
-        val pageTag = currentPage / pageTagSize
-        val startPageTag = pageTag * pageTagSize
-        val endPageTag = if ((startPageTag+(pageTagSize-1)) <= (size-1)) startPageTag+2 else size-1
+        val pageTag = currentPage / TOTAL_PAGE_SIZE
+        val startPageTag = pageTag * TOTAL_PAGE_SIZE
+        val endPageTag = if ((startPageTag+(TOTAL_PAGE_SIZE-1)) <= (size-1)) startPageTag+2 else size-1
 
         for (i in startPageTag .. endPageTag)
             myPage.add(MyPage((currentPage == i), (i+1).toString()))
@@ -310,8 +306,8 @@ class LilacTVServices {
         val pageSize = pageable.pageSize
 
         val currentPage = if (qnaDB.count() > 0) {
-            val tPage = if ((qnaDB.count() % pageListSize) > 0) 1 else 0
-            val totalPage = qnaDB.count() / pageListSize + tPage
+            val tPage = if ((qnaDB.count() % TOTAL_LIST_SIZE) > 0) 1 else 0
+            val totalPage = qnaDB.count() / TOTAL_LIST_SIZE + tPage
             if (pageable.pageNumber <= totalPage - 1) pageable.pageNumber else (totalPage - 1).toInt()
         } else 0
 

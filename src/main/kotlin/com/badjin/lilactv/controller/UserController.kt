@@ -1,5 +1,8 @@
 package com.badjin.lilactv.controller
 
+import com.badjin.lilactv.ACTIVATED
+import com.badjin.lilactv.ACTIVATE_PERIOD
+import com.badjin.lilactv.ADMIN
 import com.badjin.lilactv.model.Users
 import com.badjin.lilactv.services.HttpSessionUtils
 import com.badjin.lilactv.services.LilacTVServices
@@ -84,7 +87,7 @@ class UserController {
                 model["lilactv"] = checked
                 model["lilactvID"] = productID
                 model["user"] = user
-                if (id == 1L) return "redirect:/admin/userList"
+                if (id == ADMIN) return "redirect:/admin/userList"
             }
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
@@ -139,9 +142,11 @@ class UserController {
     @PostMapping("/resetPassword")
     fun setNewPassword(model: Model,
                        session: HttpSession,
-                       @RequestParam(value = "pass") password: String): String {
+                       @RequestParam(value = "pass") password: String,
+                       @RequestParam(value = "cpass") cpassword: String): String {
 
         try {
+            println("pass = $password\n cpass = $cpassword")
             val user = loginSession.getUserFromSession(session) as Users
             user.password = serviceModule.util.crypto(password)
             serviceModule.saveUser(user)
@@ -150,7 +155,6 @@ class UserController {
 
         } catch (e: IllegalStateException) {
             model["errorMsg"] = e.message!!
-            return "login"
         }
         return "login"
     }
@@ -190,8 +194,8 @@ class UserController {
             user.password = ""
             serviceModule.updateUserInfo(user, lilactvID)
             subscription.startDate = LocalDateTime.now()
-            subscription.endDate = LocalDateTime.now().plusYears(1)
-            serviceModule.setSubscription(subscription, user.id!!, 2L)
+            subscription.endDate = LocalDateTime.now().plusYears(ACTIVATE_PERIOD)
+            serviceModule.setSubscription(subscription, user.id!!, ACTIVATED)
             session.setAttribute("lilactvUser", true)
 
         } catch (e: IllegalStateException) {

@@ -1,5 +1,6 @@
 package com.badjin.lilactv.services
 
+import com.badjin.lilactv.USER_SESSION_KEY
 import com.badjin.lilactv.model.Users
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -8,7 +9,6 @@ import javax.servlet.http.HttpSession
 
 @Service
 class HttpSessionUtils {
-    private val USER_SESSION_KEY = "session_user"
 
     @Autowired
     lateinit var serviceModule: LilacTVServices
