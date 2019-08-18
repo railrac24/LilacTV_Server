@@ -153,7 +153,7 @@ class AdminController {
                     if (status_value != subscription.status.state) {
                         when (status_value) {
                             "Activated" -> {
-                                subscription.endDate = LocalDateTime.now().plusDays(ACTIVATE_PERIOD)
+                                subscription.endDate = LocalDateTime.now().plusYears(ACTIVATE_PERIOD)
                                 serviceModule.setSubscription(subscription,id, ACTIVATED)
                             }
                             "Expired" -> {
