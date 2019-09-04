@@ -45,7 +45,7 @@ class LilacTVServices {
             mac += id.substring(i,i+2) + ':'
         }
         mac += id.substring(10,12)
-        val unitID = id.substring(12,14).toLong(radix = 16)
+        val unitID = id.substring(12,id.length).toLong(radix = 16)
 
         return Pair(mac, unitID)
     }
@@ -55,7 +55,7 @@ class LilacTVServices {
         var unitID = ""
 
         if (index != null) {
-            unitID = "%02x".format(index)
+            unitID = "%04x".format(index)
         }
         return macID+unitID
     }
