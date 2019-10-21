@@ -15,7 +15,7 @@ const val OWNER_LIST = 102
 const val WAIT = 1L
 const val ACTIVATED = 2L
 const val EXPIRED = 3L
-const val ACTIVATE_PERIOD = 1L //1 year
+const val ACTIVATE_PERIOD = 1L
 
 const val TOTAL_PAGE_SIZE = 10
 const val TOTAL_LIST_SIZE = 8
